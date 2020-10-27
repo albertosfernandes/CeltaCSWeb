@@ -1,6 +1,7 @@
 import { ModelEnterprise } from './../model/model-enterprise';
 import { ServiceBaseService } from './service-base.service';
 import { Injectable } from '@angular/core';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class ServiceEnterpriseService {
     return this.base.httpBase
     .get<ModelEnterprise>(this.base.urlapi + '/api/apinavsSetting/getEnterprise?id=' + enterpriseId)
     .pipe(
-
+      tap()
     );
   }
 }

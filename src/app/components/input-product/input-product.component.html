@@ -1,0 +1,11 @@
+<label class="font-weight-bold" for="basic-url">Produto</label>
+<div class="input-group mb-3">
+  <input
+    type="text"
+    id="input-product"
+    class="form-control font-weight-bold"
+    aria-label="Large"
+    aria-describedby="inputGroup-sizing-lg"
+    (keyup.enter)="listenInput.next($event.target.value)"
+  />
+</div>

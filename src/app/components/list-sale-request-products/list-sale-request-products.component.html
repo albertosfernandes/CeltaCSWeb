@@ -1,0 +1,56 @@
+<div class="border border-dark rounded p-3 bg-white text-dark">
+  <div class="table-responsive">
+    <table class="table">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Item</th>
+          <th scope="col">PLU</th>
+          <th scope="col">EAN</th>
+          <th scope="col">PRODUTO</th>
+          <th scope="col">QTD</th>
+          <th scope="col">UNIT.</th>
+          <th scope="col">TOTAL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products" >
+          <th scope="row">{{product.ProductsId}}</th>
+          <td>{{product.PriceLookupCode}}</td>
+          <td>{{product.EanCode}}</td>
+          <td>{{product.NameReduced}}</td>
+          <td>{{ quantidade }}</td>
+          <td>{{product.SaleRetailPrice}}</td>
+          <td>{{quantidade * product.SaleRetailPrice}}</td>
+        </tr>
+        <!-- <tr>
+          <th scope="row">1</th>
+          <td>00020-8</td>
+          <td>789561100292</td>
+          <td>PICANHA BIFE KG</td>
+          <td>3,200</td>
+          <td>59,99</td>
+          <td>220,40</td>
+        </tr> -->
+        <!-- <tr>
+          <th scope="row">1</th>
+          <td>00020-8</td>
+          <td>789561100292</td>
+          <td>PICANHA BIFE KG</td>
+          <td>3,200</td>
+          <td>59,99</td>
+          <td>220,40</td>
+        </tr> -->
+        <!-- <tr>
+          <th scope="row">1</th>
+          <td>00020-8</td>
+          <td>789561100292</td>
+          <td>PICANHA BIFE KG</td>
+          <td>3,200</td>
+          <td>59,99</td>
+          <td>220,40</td>
+        </tr> -->
+      </tbody>
+    </table>
+  </div>
+
+</div>
