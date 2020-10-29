@@ -2,6 +2,7 @@
   <div class="input-group-prepend">
     <span class="input-group-text" style="text-decoration: underline;" id="inputGroup-sizing-lg">Pedido</span>
   </div>
-  <input type="text" class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg" autofocus (keyup)="debounce.next($event.target.value)">
+  <input type="text" class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg" autofocus
+   (keyup.enter)="debounce.next($event.target.value)">
 </div>
 

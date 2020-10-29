@@ -2,12 +2,12 @@ import { ModelSaleRequestTemp } from './model-saleRequestTemp';
 import { ModelProduct } from './model-product';
 
 export class ModelSaleRequestProductTemp {
-  saleRequestProductTempId: number;
-  productPriceLookUpCode: string;
-  value: number;
-  quantity: number;
-  totalLiquid: number;
-  product: ModelProduct;
-  saleRequestTemp: ModelSaleRequestTemp;
-  saleRequestTempId: number;
+  SaleRequestProductTempId: number;
+  ProductPriceLookUpCode: string;
+  Value: number;
+  Quantity: number;
+  TotalLiquid: number;
+  Product: ModelProduct;
+  SaleRequestTemp: ModelSaleRequestTemp;
+  SaleRequestTempId: number;
 }

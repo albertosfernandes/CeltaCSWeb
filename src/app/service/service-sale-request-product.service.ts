@@ -8,4 +8,9 @@ import { map, catchError, tap  } from 'rxjs/operators';
 export class ServiceSaleRequestProductService {
 
   constructor(private base: ServiceBaseService) { }
+
+  updateSaleRequestProductTemp(_saleRequestProductTemp) {
+    this.base.httpBase
+    .put(this.base.urlapi + '/api/apisale...?', _saleRequestProductTemp);
+  }
 }

@@ -2,6 +2,7 @@ import { ServiceBaseService } from './service-base.service';
 import { Injectable } from '@angular/core';
 import { map, catchError, tap  } from 'rxjs/operators';
 import { ModelSaleRequest } from '../model/model-saleRequest';
+import { ModelSaleRequestTemp } from '../model/model-saleRequestTemp';
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +27,24 @@ export class ServiceSaleRequestService {
     .pipe(
       tap()
     );
+  }
+
+  getSaleRequestTemp(enterpriseId, saleRequestTempCode) {
+    return this.base.httpBase
+    .get<ModelSaleRequestTemp>(this.base.urlapi + '/api/apiSaleRequest/GetTemp?_enterpriseId=' + enterpriseId +
+        '&_personalizedCode=' + saleRequestTempCode + '&_considerUsing=false')
+    .pipe(
+      tap()
+    );
+  }
+
+  addSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
+    return this.base.httpBase
+    .post(this.base.urlapi + '/api/apiSaleRequest/AddSaleRequestTemp', saleRequestTemp);
+  }
+
+  updateSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
+    return this.base.httpBase
+    .put(this.base.urlapi + '/api/apiSaleRequest/UpdateSaleRequestTemp', saleRequestTemp);
   }
 }

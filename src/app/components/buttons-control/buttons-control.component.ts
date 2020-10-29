@@ -7,6 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ButtonsControlComponent implements OnInit {
 
+  isNewTemp = false;
+  isAlterSaleRequest = false;
+  isSaleRequestTemp = false;
+  isSaleRequest = false;
   constructor() { }
 
   ngOnInit() {
