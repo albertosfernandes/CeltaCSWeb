@@ -45,6 +45,27 @@ export class ServiceSaleRequestService {
 
   updateSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
     return this.base.httpBase
-    .put(this.base.urlapi + '/api/apiSaleRequest/UpdateSaleRequestTemp', saleRequestTemp);
+    .put(this.base.urlapi + '/api/apiSaleRequest/UpdateSaleRequestTemp', saleRequestTemp)
+    .pipe(
+      tap(
+        data => console.log(data),
+        error => console.log(error)
+      )
+    );
+  }
+
+  deleteSaleRequestTemp(saleRequestTempId) {
+    return this.base.httpBase
+    .get(this.base.urlapi + '/api/apiSaleRequest/');
+  }
+
+  finishSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
+    return this.base.httpBase
+    .post(this.base.urlapi + '/api/apiSaleRequest/FinishSaleRequestTemp', saleRequestTemp);
+  }
+
+  addSaleRequest(saleRequest: ModelSaleRequest) {
+    return this.base.httpBase
+    .post(this.base.urlapi + '/api/apiSaleRequest/AddSaleRequest', saleRequest);
   }
 }

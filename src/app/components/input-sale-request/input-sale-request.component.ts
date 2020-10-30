@@ -1,3 +1,5 @@
+import { ModelSaleRequestProductTemp } from './../../model/model-saleRequestProductTemp';
+import { ModelProduct } from './../../model/model-product';
 import { ServiceSaleRequestProductService } from './../../service/service-sale-request-product.service';
 import { ServiceBaseService } from './../../service/service-base.service';
 import { ServiceSaleRequestService } from './../../service/service-sale-request.service';
@@ -6,8 +8,6 @@ import { debounceTime } from 'rxjs/operators';
 import { Subject, Subscription } from 'rxjs';
 import { ModelSaleRequest } from 'src/app/model/model-saleRequest';
 import { ModelSaleRequestTemp } from 'src/app/model/model-saleRequestTemp';
-import { ModelProduct } from 'src/app/model/model-product';
-import { ModelSaleRequestProductTemp } from 'src/app/model/model-saleRequestProductTemp';
 
 
 @Component({
@@ -28,19 +28,21 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
   @Output() currentTemp = new EventEmitter();
   @Output() saleRequestTempEmit = new EventEmitter();
   @Input() _productReceived;
-  personalizedCode = 'okk';
+  personalizedCode = 'ok';
   isNew = false;
   isNewTemp = false;
+  isUsingsaleRequestTemp = false;
   @Input() _qtdInput: number;
 
-  constructor(private serviceSaleRequest: ServiceSaleRequestService, private base: ServiceBaseService) { }
+  constructor(private serviceSaleRequest: ServiceSaleRequestService, private base: ServiceBaseService,
+              private serviceSaleRequestProduct: ServiceSaleRequestProductService) { }
 
   enableInputValue() {
     this.debounce
     // .pipe(debounceTime(300))
     .pipe()
     .subscribe(filter => {
-      this.personalizedCode = filter; console.log('tem algo? ' + filter);
+      this.personalizedCode = filter;
       this.getSaleRequest();
     },
     erro => {
@@ -53,7 +55,6 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getSaleRequest() {
-    console.log('chamei get sale Request');
     this.sub.push(
       this.serviceSaleRequest.getSaleRequest(this.base.enterpriseId, this.personalizedCode)
     .subscribe(saleRequest => {
@@ -64,8 +65,6 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
     () => {
       // finalizou
       if (this.saleRequest == null || this.saleRequest === undefined) {
-        // this.isNew = true;
-        // this.novo.emit(this.isNew);
         // entao vms ver se existe saleRequestTemp!
         this.getSaleRequestTemp();
       } else {
@@ -86,14 +85,17 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
       },
       () => {
         if (this.saleRequestTemp == null || this.saleRequestTemp === undefined) {
-          this.isNewTemp = true;
-          this.newTemp.emit(this.isNew);
-          // vms criar uma nova Temp então
-          this.addSaleRequestTemp();
+              this.isNewTemp = true;
+              this.newTemp.emit(this.isNew);
+              // vms criar uma nova Temp então
+              console.log('valor de personalizedCode: ' + this.personalizedCode);
+              if (this.personalizedCode !== 'ok') {
+                this.addSaleRequestTemp();
+              }
         } else {
           // carrega ele então
           this.saleRequestTempEmit.emit(this.saleRequestTemp);
-          console.log(this.saleRequestTemp);
+          this.isUsingsaleRequestTemp = true;
         }
       })
     );
@@ -111,8 +113,23 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
         alert(erro.error);
       },
       () => {
-        this.currentTemp.emit(this.personalizedCode);
+        // this.currentTemp.emit(this.personalizedCode);
         // fim - salvo
+      })
+    );
+  }
+
+  addSaleRequestProductTemp(_saleRequestProductTemp: ModelSaleRequestProductTemp) {
+    this.sub.push(
+      this.serviceSaleRequestProduct.addSaleRequestProductTemp(_saleRequestProductTemp)
+      .subscribe(response => {
+       // s
+      },
+      error => {
+        alert('Falha ao adicionar novo produto ao pedido Temporário');
+      },
+      () => {
+        // fim
       })
     );
   }
@@ -126,7 +143,7 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
     this.saleRequestProductTemp.SaleRequestTempId = this.saleRequestTemp.SaleRequestTempId;
     this.saleRequestProductTemp.TotalLiquid = (this._qtdInput * _product.SaleRetailPrice);
     this.saleRequestProductTemp.Value = _product.SaleRetailPrice;
-    console.log(this.saleRequestProductTemp);
+    // this.saleRequestProductTemp.Product = _product;
     this.updateSaleRequestTemp(this.saleRequestProductTemp);
   }
 
@@ -143,10 +160,11 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
         console.log('parece que atualizou!!');
       },
       error => {
-        alert('Erro ao atualizar os produtos do pedido');
+        alert('Erro ao atualizar valor total do pedido');
       },
       () => {
         // fim
+        this.saleRequestTemp.Products = [];
       })
     );
   }
@@ -155,11 +173,13 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
     this.enableInputValue();
   }
   ngOnChanges() {
-    console.log('mudou, atualize o saleRequestTemp com: ' + this._productReceived.NameReduced);
-    this.updateSaleRequestTempProduct(this._productReceived);
+    if (this._productReceived !== undefined) {
+      this.updateSaleRequestTempProduct(this._productReceived);
+    }
   }
   ngOnDestroy() {
     this.debounce.unsubscribe();
     this.sub.forEach(s => s.unsubscribe);
+    this.isUsingsaleRequestTemp = false;
   }
 }

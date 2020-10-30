@@ -19,24 +19,27 @@ export class AppComponent implements OnInit, OnChanges {
   saleRequestProductTemp = new ModelSaleRequestProductTemp();
   saleRequestTemp: ModelSaleRequestTemp;
   quantidade: number;
+  _isCancel = false;
 
   receiveSaleRequest(isSaleRequestNew) {
     this.isNewSaleRequestTemp = isSaleRequestNew;
   }
 
   recebeProduct(myprod: ModelProduct) {
-    console.log('app component produto recebido: ' + myprod.NameReduced);
     this.product = myprod;
-    // this.updateSaleRequestTempProduct(myprod);
-    console.log('product: ' + myprod.NameReduced);
+  }
+
+  receiveIsCancel($event) {
+    this._isCancel = $event;
+    console.log('app.comp isCancel: ' + this._isCancel);
   }
 
   receiveCurrentSaleRequestTemp(saleRequestTempCode) {
     console.log('Comanda temp aberta: ' + saleRequestTempCode);
   }
 
-  receiveSaleRequestTemp(saleRequestTemp) {
-    console.log('toda comanda ' + saleRequestTemp.PersonalizedCode);
+  receiveSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
+    console.log('toda comanda ' + saleRequestTemp);
     this.saleRequestTemp = saleRequestTemp;
     this.isAddProduct = true;
     this.isNewSaleRequestTemp = true;
@@ -52,7 +55,6 @@ export class AppComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    alert('recebeu valor do input é novo? ' + this.isNewSaleRequestTemp);
-    alert('produto novo: ' + this.product);
-  }
+
+    }
 }

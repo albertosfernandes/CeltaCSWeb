@@ -3,6 +3,6 @@
     <span class="input-group-text" style="text-decoration: underline;" id="inputGroup-sizing-lg">Pedido</span>
   </div>
   <input type="text" class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg" autofocus
-   (keyup.enter)="debounce.next($event.target.value)">
+   (keyup.enter)="debounce.next($event.target.value)" [disabled]='isUsingsaleRequestTemp'>
 </div>
 

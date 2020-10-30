@@ -10,17 +10,19 @@
           <th scope="col">QTD</th>
           <th scope="col">UNIT.</th>
           <th scope="col">TOTAL</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let product of products" >
-          <th scope="row">{{product.ProductsId}}</th>
-          <td>{{product.PriceLookupCode}}</td>
-          <td>{{product.EanCode}}</td>
-          <td>{{product.NameReduced}}</td>
-          <td>{{ quantidade }}</td>
-          <td>{{product.SaleRetailPrice}}</td>
-          <td>{{quantidade * product.SaleRetailPrice}}</td>
+        <tr *ngFor="let product of _saleRequestFull?.Products" >
+          <th scope="row">{{product.SaleRequestProductTempId}}</th>
+          <td>{{product.ProductPriceLookUpCode}}</td>
+          <td>{{product.Product?.EanCode}}</td>
+          <td>{{product.Product?.NameReduced}}</td>
+          <td>{{ product.Quantity }}</td>
+          <td>{{product.Value}}</td>
+          <td>{{product.TotalLiquid}}</td>
+          <td *ngIf="isCancel" (click)='sendCancelItem(product.SaleRequestProductTempId)'><span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td>
         </tr>
         <!-- <tr>
           <th scope="row">1</th>
