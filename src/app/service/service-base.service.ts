@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
- const API = 'http://localhost:10965';
+ // const API = 'http://localhost:10965';
+ // const API = 'http://localhost:1096';
+ const API = 'http://cloud.celtaware.com.br:1096';
 
 @Injectable({
   providedIn: 'root'

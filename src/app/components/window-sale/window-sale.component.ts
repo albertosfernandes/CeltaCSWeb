@@ -24,18 +24,24 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   isSaleRequest = false;
   isSaleRequestActiv = false;
   isCancel = false;
+  isPrinted = false;
+  isShowSaleReqFull = false;
   @ViewChild('product') inputProduct;
   @ViewChild('saleRequest') inputSaleRequest;
   _qtdInput = 1;
+  messageTop = 'TERMINAL LIVRE';
 
   saleRequestpersonalizedCode: any;
   saleRequestTemp = new ModelSaleRequestTemp;
-  saleRequest: ModelSaleRequest;
+  saleRequestTempNew = new ModelSaleRequestTemp;
+  saleRequest = new ModelSaleRequest;
+  meuSaleReq: ModelSaleRequest;
   saleRequestNew = new ModelSaleRequest;
   saleRequestProductTemp = new ModelSaleRequestProductTemp;
-  saleRequestProducts: ModelSaleRequestProduct[] = [];
+  // saleRequestProducts = new ModelSaleRequestProduct[] = [];
   saleRequestProduct = new ModelSaleRequestProduct;
   product = new ModelProduct;
+  countProducts = 0;
 
 
   constructor(private serviceSaleRequestProduct: ServiceSaleRequestProductService, private serviceProduct: ServiceProductService,
@@ -44,30 +50,40 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
 
   onclickSaleRequest(saleRequestValue) {
     this.saleRequestpersonalizedCode = saleRequestValue;
-    this.getSaleRequest();
+    this.getSaleRequestTemp();
   }
 
-  getSaleRequest() {
-    this.sub.push(
-      this.serviceSaleRequest.getSaleRequest(this.base.enterpriseId, this.saleRequestpersonalizedCode)
-    .subscribe(saleRequest => {
-      this.saleRequest = saleRequest;
-    }, erro => {
-      alert('Erro ao puxar os pedidos.');
-    },
-    () => {
-      // finalizou
-      if (this.saleRequest === null || this.saleRequest === undefined) {
-        // entao vms ver se existe saleRequestTemp!
-        this.getSaleRequestTemp();
-      } else {
-        // carrega ele então
-        this.isSaleRequestActiv = true;
-        this.isSaleRequest = true;
-      }
-    })
-    );
+  onclickMoreSaleRequest() {
+    this.isShowSaleReqFull = true;
   }
+
+  // getSaleRequest() {
+  //   // this.sub.push(
+  //     this.serviceSaleRequest.getSaleRequest(this.base.enterpriseId, this.saleRequestpersonalizedCode)
+  //   .subscribe(saleRequestData => {
+  //     this.saleRequest = saleRequestData;
+  //     // tslint:disable-next-line: max-line-length
+  // tslint:disable-next-line: max-line-length
+  //     console.log('saleReq Raiz: ' + saleRequestData.PersonalizedCode + saleRequestData.TotalLiquid + '> ' + saleRequestData.Products[0].ProductPriceLookUpCode);
+  //     // tslint:disable-next-line: max-line-length
+  // tslint:disable-next-line: max-line-length
+  //     console.log('meuSaleReq dentro do subs: ' + this.saleRequest.PersonalizedCode + '? ' + this.saleRequest.TotalLiquid  + '> ' + this.saleRequest.Products[0].ProductPriceLookUpCode + this.saleRequest.PersonalizedCode);
+  //   }, erro => {
+  //     alert('Erro ao puxar os pedidos.');
+  //   },
+  //   () => {
+  //     // finalizou
+  //     if (this.saleRequest == null || this.saleRequest === undefined) {
+  //       // entao vms ver se existe saleRequestTemp!
+  //       this.getSaleRequestTemp();
+  //     } else {
+  //       // carrega ele então
+  //       this.isSaleRequestActiv = true;
+  //       // this.isSaleRequest = true;
+  //     }
+  //   })
+  //   ;
+  // }
 
   getSaleRequestTemp() {
     this.sub.push(
@@ -86,16 +102,18 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
           // carrega ele então
           this.isSaleRequestActiv = true;
           this.isSaleRequestTemp = true;
+          this.inputProduct.nativeElement.focus();
+          this.countProducts = this.countProducts + 1;
         }
       })
     );
   }
 
   addSaleRequestTemp() {
-    this.saleRequestTemp.EnterpriseId = this.base.enterpriseId;
-    this.saleRequestTemp.PersonalizedCode = this.saleRequestpersonalizedCode;
+    this.saleRequestTempNew.EnterpriseId = this.base.enterpriseId;
+    this.saleRequestTempNew.PersonalizedCode = this.saleRequestpersonalizedCode;
     this.sub.push(
-      this.serviceSaleRequest.addSaleRequestTemp(this.saleRequestTemp)
+      this.serviceSaleRequest.addSaleRequestTemp(this.saleRequestTempNew)
       .subscribe(responseAdd => {
         // deu certo?
       },
@@ -106,6 +124,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         // fim - salvo - recarrega lista de pedidos pedido
         this.isSaleRequestActiv = true;
         this.isSaleRequestTemp = true;
+        this.getSaleRequestTemp();
       })
     );
   }
@@ -115,14 +134,10 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   onclickProduct(value) {
     if (value.includes('*')) {
       this._qtdInput = value.substring(0, 1); // .emit(filter.substring(0, 1));
-      this.clearInputProduct();
+      // this.clearInputProduct();
     } else {
       this.getProduct(value);
     }
-    this.sub.push(
-
-    );
-    this.clearInputProduct();
     }
 
     getProduct(productCode) {
@@ -137,9 +152,12 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       () => {
         // fim
         if (this.product !== null) {
+          this.messageTop = this.product.NameReduced;
           this.updateSaleRequestTempProduct(this.product);
         } else {
-          alert('Produto não encontrado');
+          // alert('Produto não encontrado');
+          this.messageTop = 'Produto não encontrado';
+          this.clearInputProduct();
         }
       })
       );
@@ -170,10 +188,10 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     updateSaleRequestTemp(_saleRequestProductTemp: ModelSaleRequestProductTemp) {
       this.saleRequestTemp.Products = [];
       this.saleRequestTemp.Products.push(_saleRequestProductTemp);
-      this.saleRequestTemp.TotalLiquid = (this.saleRequestTemp.TotalLiquid + _saleRequestProductTemp.TotalLiquid);
-      // (this.saleRequestTemp.TotalLiquid + _saleRequestProductTemp.TotalLiquid);
+      this.saleRequestTemp.TotalLiquid += this.saleRequestProductTemp.TotalLiquid;
       this.submitUpdateSaleRequestTemp(this.saleRequestTemp);
     }
+
 
     submitUpdateSaleRequestTemp (_saleRequestTempFull: ModelSaleRequestTemp) {
       this.sub.push(
@@ -189,7 +207,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
           this.saleRequestTemp.Products = [];
           _saleRequestTempFull.Products = [];
           this.clearInputProduct();
-          this.getSaleRequest();
+          this.getSaleRequestTemp();
         })
       );
     }
@@ -211,7 +229,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       },
       () => {
         this.isCancel = false;
-        this.getSaleRequest();
+        this.getSaleRequestTemp();
       }
       )
     );
@@ -236,41 +254,47 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         this.clearInputSaleRequest();
         this.isSaleRequestActiv = false;
         this.isSaleRequestTemp = false;
+        this.saleRequestTemp = new ModelSaleRequestTemp;
+        this.isShowSaleReqFull = false;
+        this.inputSaleRequest.nativeElement.focus();
+        this.messageTop = 'TERMINAL LIVRE';
+        this.countProducts = 0;
       })
     );
   }
 
-  populeSaleRequest(saleReqTemp: ModelSaleRequestTemp) {
-    this.saleRequestNew.DateHourOfCreation = 'Horario!!';
-    this.saleRequestNew.DateOfCreation = 'somente dada';
-    this.saleRequestNew.EnterpriseId = this.base.enterpriseId;
-    this.saleRequestNew.FlagOrigin = '2';
-    this.saleRequestNew.FlagStatus = 'ABERTO';
-    this.saleRequestNew.IsCancelled = false;
-    this.saleRequestNew.IsUsing = false;
-    this.saleRequestNew.Peoples = 1;
-    this.saleRequestNew.PersonalizedCode = saleReqTemp.PersonalizedCode;
-    this.saleRequestNew.TotalLiquid = this.saleRequestTemp.TotalLiquid;
-    this.populeSaleRequestProduct(saleReqTemp.Products);
-  }
-  populeSaleRequestProduct(saleRedProd: ModelSaleRequestProductTemp[]) {
-    saleRedProd.forEach(p => {
-      this.saleRequestProduct.Comments = null;
-      this.saleRequestProduct.DateHourOfCreation = '';
-      this.saleRequestProduct.IsCancelled = false;
-      this.saleRequestProduct.IsDelivered = false;
-      this.saleRequestProduct.ProductInternalCodeOnErp = p.Product.InternalCodeOnERP;
-      this.saleRequestProduct.ProductPriceLookUpCode = p.ProductPriceLookUpCode;
-      this.saleRequestProduct.ProductionStatus = 0;
-      this.saleRequestProduct.Quantity = p.Quantity;
-      // this.saleRequestProduct.SaleRequestId =  ?????
-      this.saleRequestProduct.TotalLiquid = p.TotalLiquid;
-      this.saleRequestProduct.Value = p.Value;
-      this.saleRequestProducts.push(this.saleRequestProduct);
-    });
-    this.saleRequestNew.Products = this.saleRequestProducts;
-    this.addSaleRequest(this.saleRequestNew);
-  }
+  // populeSaleRequest(saleReqTemp: ModelSaleRequestTemp) {
+  //   this.saleRequestNew.DateHourOfCreation = 'Horario!!';
+  //   this.saleRequestNew.DateOfCreation = 'somente dada';
+  //   this.saleRequestNew.EnterpriseId = this.base.enterpriseId;
+  //   this.saleRequestNew.FlagOrigin = '2';
+  //   this.saleRequestNew.FlagStatus = 'ABERTO';
+  //   this.saleRequestNew.IsCancelled = false;
+  //   this.saleRequestNew.IsUsing = false;
+  //   this.saleRequestNew.Peoples = 1;
+  //   this.saleRequestNew.PersonalizedCode = saleReqTemp.PersonalizedCode;
+  //   this.saleRequestNew.TotalLiquid = this.saleRequestTemp.TotalLiquid;
+  //   this.populeSaleRequestProduct(saleReqTemp.Products);
+  // }
+  // populeSaleRequestProduct(saleRedProd: ModelSaleRequestProductTemp[]) {
+  //   saleRedProd.forEach(p => {
+  //     this.saleRequestProduct.Comments = null;
+  //     this.saleRequestProduct.DateHourOfCreation = '';
+  //     this.saleRequestProduct.IsCancelled = false;
+  //     this.saleRequestProduct.IsDelivered = false;
+  //     this.saleRequestProduct.ProductInternalCodeOnErp = p.Product.InternalCodeOnERP;
+  //     this.saleRequestProduct.ProductPriceLookUpCode = p.ProductPriceLookUpCode;
+  //     this.saleRequestProduct.ProductionStatus = 0;
+  //     this.saleRequestProduct.Quantity = p.Quantity;
+  //     // this.saleRequestProduct.SaleRequestId =  ?????
+  //     this.saleRequestProduct.TotalLiquid = p.TotalLiquid;
+  //     this.saleRequestProduct.Value = p.Value;
+  //     this.saleRequestProducts[] = [];
+  //     this.saleRequestProducts.push(this.saleRequestProduct);
+  //   });
+  //   this.saleRequestNew.Products = this.saleRequestProducts;
+  //   this.addSaleRequest(this.saleRequestNew);
+  // }
 
 
   addSaleRequest(_saleRequest: ModelSaleRequest) {
@@ -284,7 +308,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       },
       () => {
         // fim
-        this.saleRequestProducts = [];
+        // this.saleRequestProducts = [];
         this.saleRequest.Products = [];
         this.clearInputSaleRequest();
         this.isSaleRequestActiv = false;
@@ -299,13 +323,15 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    this.saleRequest = new ModelSaleRequest();
+    this.inputSaleRequest.nativeElement.focus();
+     // this.saleRequest = new ModelSaleRequest();
+    // this.saleRequestTemp = new ModelSaleRequestTemp();
   }
   ngOnDestroy() {
 
   }
   ngOnChanges() {
-
+    this.getSaleRequestTemp();
   }
 
 

@@ -25,7 +25,10 @@ export class ServiceSaleRequestService {
     .get<ModelSaleRequest>(this.base.urlapi + '/api/apiSaleRequest/Get?_enterpriseId=' + enterpriseId +
         '&_personalizedCode=' + saleRequestPersonCode + '&_considerUsing=false')
     .pipe(
-      tap()
+      tap(
+        data => console.log(data),
+        error => console.log('error ' + error)
+      )
     );
   }
 

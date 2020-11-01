@@ -8,6 +8,7 @@ import { InputProductComponent } from './components/input-product/input-product.
 import { ButtonsControlComponent } from './components/buttons-control/buttons-control.component';
 import { HttpClientModule } from '@angular/common/http';
 import { WindowSaleComponent } from './components/window-sale/window-sale.component';
+import { ListSaleRequestComponent } from './components/list-sale-request/list-sale-request.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { WindowSaleComponent } from './components/window-sale/window-sale.compon
     ListSaleRequestProductsComponent,
     InputProductComponent,
     ButtonsControlComponent,
-    WindowSaleComponent
+    WindowSaleComponent,
+    ListSaleRequestComponent
   ],
   imports: [
     BrowserModule,

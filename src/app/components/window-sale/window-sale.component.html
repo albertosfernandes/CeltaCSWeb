@@ -1,5 +1,6 @@
-<div class="bg-dark" style="position: fixed; width: 100%; height: 100%;">
-  <div class="conteiner-fluid p-3 mb-2 bg-dark text-white">
+<!-- < class="bg-dark" style="position: fixed; width: 100%; height: 100%;"> -->
+<div style=" width: 100%; height: 100%; background-color: rgb(67, 125, 83)">
+  <div class="conteiner-fluid p-3 mb-2 text-white">
 
     <div class="row">
       <div class="col-md-2">
@@ -10,83 +11,84 @@
           <input type="text" #saleRequest class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg" autofocus (keyup.enter)="onclickSaleRequest($event.target.value)" [disabled]='isSaleRequestActiv'>
         </div>
       </div>
-      <div class="col-md-9 ml-auto">
+      <div class="col-md-1">
 
-
-<div class="border border-dark rounded p-3 bg-white text-dark" *ngIf="isSaleRequestActiv && isSaleRequestTemp" >
-  <div class="table-responsive">
-    <table class="table">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">Item</th>
-          <th scope="col">PLU</th>
-          <th scope="col">EAN</th>
-          <th scope="col">PRODUTO</th>
-          <th scope="col">QTD</th>
-          <th scope="col">UNIT.</th>
-          <th scope="col">TOTAL</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let product of saleRequestTemp?.Products" >
-          <th scope="row">{{product.SaleRequestProductTempId}}</th>
-          <td>{{product.ProductPriceLookUpCode}}</td>
-          <td>{{product.Product?.EanCode}}</td>
-          <td>{{product.Product?.NameReduced}}</td>
-          <td>{{ product.Quantity }}</td>
-          <td>{{product.Value}}</td>
-          <td>{{product.TotalLiquid}}</td>
-          <td *ngIf="isCancel" (click)='sendCancelItem(product.SaleRequestProductTempId)'><span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="border border-dark rounded p-3 bg-white text-dark" *ngIf="isSaleRequestActiv && isSaleRequest" >
-  <div class="table-responsive">
-    <table class="table">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">Item</th>
-          <th scope="col">PLU</th>
-          <th scope="col">EAN</th>
-          <th scope="col">PRODUTO</th>
-          <th scope="col">QTD</th>
-          <th scope="col">UNIT.</th>
-          <th scope="col">TOTAL</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let product of saleRequest?.Products" >
-          <th scope="row">{{product.SaleRequestProductId}}</th>
-          <td>{{product.ProductPriceLookUpCode}}</td>
-          <td>{{product.Product?.EanCode}}</td>
-          <td>{{product.Product?.NameReduced}}</td>
-          <td>{{ product.Quantity }}</td>
-          <td>{{product.Value}}</td>
-          <td>{{product.TotalLiquid}}</td>
-          <td *ngIf="isCancel" (click)='sendCancelItem(product.SaleRequestProductId)'><span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-
+      </div>
+      <div class="col-md-9">
+        <div class="border border-dark rounded p-3 bg-white text-dark p-1">
+          <p style="text-transform: uppercase; text-align: center; font-size:150%" class="mb-0"> <strong>{{messageTop}}</strong> </p>
+        </div>
       </div>
     </div>
 
+
+
+
+
+
 <div class="row">
-  <label class="font-weight-bold" for="basic-url">Produto</label>
-  <div class="input-group mb-3">
-     <input type="text" id="input-product" #product class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
-    (keyup.enter)='onclickProduct($event.target.value)'
-  />
+  <div class="col-sm-3">
+    <label class="font-weight-bold" for="basic-url">Produto</label>
+    <div class="input-group mb-3">
+       <input type="text" id="input-product" #product class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
+      (keyup.enter)='onclickProduct($event.target.value)'
+    />
+    </div>
+    <div class="col-sm-12">
+      <label class="font-weight-bold" style="font-size: 150%;" for="subtot">Subtotal</label>
+      <div class="border border-success bg-white">
+        <p class="ml-2" id='subtot' style="color:black"><strong> R$ {{saleRequestTemp.TotalLiquid | number: '1.2-2'}}</strong> </p>
+      </div>
+    </div>
   </div>
+
+  <div class="col-md-9 ">
+  <div class="border border-dark rounded p-3 bg-white text-dark">
+    <div class="table-responsive">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col">PLU</th>
+            <th scope="col">EAN</th>
+            <th scope="col">PRODUTO</th>
+            <th scope="col">QTD</th>
+            <th scope="col">UNIT.</th>
+            <th scope="col">TOTAL</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of saleRequestTemp?.Products; let indexProducts=index" >
+            <th scope="row">{{indexProducts + 1}}</th>
+            <td>{{product.ProductPriceLookUpCode}}</td>
+            <td>{{product.Product?.EanCode}}</td>
+            <td>{{product.Product?.NameReduced}}</td>
+            <td>{{ product.Quantity }}</td>
+            <td>{{product.Value | number : '1.2-2'}}</td>
+            <td>{{product.TotalLiquid | number : '1.2-2'}}</td>
+            <td *ngIf="isCancel" (click)='sendCancelItem(product.SaleRequestProductTempId)'><span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  </div>
+
 </div>
+<!-- <div class="row">
+    <div class="col-sm-3">
+      <label class="font-weight-bold" style="font-size: 150%;" for="subtot">Subtotal</label>
+      <div class="border border-success bg-white">
+        <p class="ml-2" id='subtot' style="color:black"><strong> R$ {{saleRequestTemp.TotalLiquid}}</strong> </p>
+      </div>
+    </div>
+</div> -->
+
+
+
 
 
     <div class="row justify-content-md-center" *ngIf="isSaleRequestActiv" >
@@ -94,13 +96,14 @@
         <div class="col-sm-12 mt-2">
           <button type="button" class="btn btn-outline-light ml-3" (click)='onclickSave()' >Salvar</button>
           <button type="button" class="btn btn-outline-light ml-3" *ngIf="isSaleRequest && isSaleRequestActiv" >Alterar</button>
-          <button type="button" class="btn btn-outline-light ml-3"  >Imprimir</button>
+          <button type="button" class="btn btn-outline-light ml-3"  *ngIf="isPrinted" >Imprimir</button>
           <button type="button" class="btn btn-outline-light ml-3" (click)='onclickCancel()'>Cancelar</button>
+          <button type="button" class="btn btn-outline-light ml-3" (click)='onclickMoreSaleRequest()'>Exibir</button>
         </div>
       </div>
 
     </div>
   </div>
 
-
+  <app-list-sale-request *ngIf="isShowSaleReqFull" [saleRequestPersonalizedCode]='saleRequestpersonalizedCode'></app-list-sale-request>
 </div>
