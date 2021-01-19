@@ -8,7 +8,8 @@
           <div class="input-group-prepend">
             <span class="input-group-text" style="text-decoration: underline;" id="inputGroup-sizing-lg">Pedido</span>
           </div>
-          <input type="text" #saleRequest class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg" autofocus (keyup.enter)="onclickSaleRequest($event.target.value)" [disabled]='isSaleRequestActiv'>
+          <input id="saleRequest" type="text" #saleRequest class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
+          autofocus (keyup.enter)="onclickSaleRequest($event.target.value)" [disabled]='isSaleRequestActiv' required minlength="4">
         </div>
       </div>
       <div class="col-md-1">

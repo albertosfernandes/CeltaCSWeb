@@ -9,6 +9,9 @@ import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } fro
 import { Subject, Subscription } from 'rxjs';
 import { ServiceSaleRequestService } from 'src/app/service/service-sale-request.service';
 import { ModelSaleRequest } from 'src/app/model/model-saleRequest';
+// import Swal from 'sweetalert2/dist/sweetalert2.js';
+import { SweetAlert2Module } from '@toverux/ngx-sweetalert2';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-window-sale',
@@ -49,8 +52,14 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
               private serviceProductService: ServiceProductService) { }
 
   onclickSaleRequest(saleRequestValue) {
-    this.saleRequestpersonalizedCode = saleRequestValue;
-    this.getSaleRequestTemp();
+    if (!saleRequestValue) {
+      Swal.fire('Comanda não identificada!', '', 'error');
+
+    } else {
+      this.saleRequestpersonalizedCode = saleRequestValue;
+      this.getSaleRequestTemp();
+
+    }
   }
 
   onclickMoreSaleRequest() {
@@ -136,7 +145,11 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       this._qtdInput = value.substring(0, 1); // .emit(filter.substring(0, 1));
       // this.clearInputProduct();
     } else {
-      this.getProduct(value);
+      if (!value) {
+        Swal.fire('Erro!', 'É necessário informar o código do produto.', 'error');
+      } else {
+        this.getProduct(value);
+      }
     }
     }
 
