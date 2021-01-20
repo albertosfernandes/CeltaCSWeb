@@ -9,7 +9,7 @@ import { ButtonsControlComponent } from './components/buttons-control/buttons-co
 import { HttpClientModule } from '@angular/common/http';
 import { WindowSaleComponent } from './components/window-sale/window-sale.component';
 import { ListSaleRequestComponent } from './components/list-sale-request/list-sale-request.component';
-
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 
 @NgModule({
   declarations: [
@@ -23,7 +23,8 @@ import { ListSaleRequestComponent } from './components/list-sale-request/list-sa
   ],
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    SweetAlert2Module.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

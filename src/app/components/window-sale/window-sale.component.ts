@@ -9,9 +9,10 @@ import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } fro
 import { Subject, Subscription } from 'rxjs';
 import { ServiceSaleRequestService } from 'src/app/service/service-sale-request.service';
 import { ModelSaleRequest } from 'src/app/model/model-saleRequest';
-// import Swal from 'sweetalert2/dist/sweetalert2.js';
-import { SweetAlert2Module } from '@toverux/ngx-sweetalert2';
 import Swal from 'sweetalert2';
+import { error } from 'protractor';
+
+
 
 @Component({
   selector: 'app-window-sale',
@@ -53,8 +54,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
 
   onclickSaleRequest(saleRequestValue) {
     if (!saleRequestValue) {
-      Swal.fire('Comanda não identificada!', '', 'error');
-
+      Swal.fire('Número de comanda inválido.', 'Digite o código ou faça a leitura pelo scanner. ', 'warning');
     } else {
       this.saleRequestpersonalizedCode = saleRequestValue;
       this.getSaleRequestTemp();
@@ -100,8 +100,8 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(saleRequestTempData => {
         this.saleRequestTemp = saleRequestTempData;
       },
-      erro => {
-        alert('Erro ao carregar pedidos temporários');
+      err => {
+        Swal.fire('Erro ao carregar pedidos temporário.', err.error, 'error');
       },
       () => {
         if (this.saleRequestTemp == null || this.saleRequestTemp === undefined) {
@@ -126,8 +126,9 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(responseAdd => {
         // deu certo?
       },
-      erro => {
-        alert(erro.error);
+      err => {
+        Swal.fire('Erro ao adicionar pedido temporário.', err.error, 'error');
+        // alert(err.error);
       },
       () => {
         // fim - salvo - recarrega lista de pedidos pedido
@@ -146,7 +147,8 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       // this.clearInputProduct();
     } else {
       if (!value) {
-        Swal.fire('Erro!', 'É necessário informar o código do produto.', 'error');
+        Swal.fire('Produto não encontrado.',
+        'Para consulta digite apenas números ou faça a leitura do código de barras no scanner.', 'warning');
       } else {
         this.getProduct(value);
       }
@@ -159,8 +161,9 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(prod => {
         this.product = prod;
       },
-      erro => {
-        alert(erro.error);
+      err => {
+        Swal.fire('Erro ao consultar produto.', err.error, 'error');
+        // alert(erro.error);
       },
       () => {
         // fim
@@ -212,8 +215,9 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         .subscribe(response => {
           console.log('parece que atualizou!!');
         },
-        error => {
-          alert('Erro ao atualizar valor total do pedido');
+        err => {
+          Swal.fire('Erro ao atualizar valor total do pedido.', err.error, 'error');
+          // alert('Erro ao atualizar valor total do pedido');
         },
         () => {
           // fim
@@ -237,8 +241,9 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       this.serviceSaleRequestProduct.deleteSaleRequestProductTemp(idSaleRequestProductTemp)
       .subscribe(resp => {
       },
-      error => {
-        alert('Erro ao excluir item');
+      err => {
+        Swal.fire('Erro ao excluir item.', err.error, 'error');
+        // alert('Erro ao excluir item');
       },
       () => {
         this.isCancel = false;
@@ -260,8 +265,9 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(response => {
         //
       },
-      error => {
-        alert('Erro ao grava o pedido');
+      err => {
+        Swal.fire('Erro ao gravar o pedido.', err.error, 'error');
+        // alert('Erro ao grava o pedido');
       },
       () => {
         this.clearInputSaleRequest();
@@ -316,8 +322,9 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(response => {
         console.log('salvo');
       },
-      error => {
-        alert('Erro ao grava pedido');
+      err => {
+        Swal.fire('Erro ao gravar o pedido.', err.error, 'error');
+        // alert('Erro ao grava pedido');
       },
       () => {
         // fim

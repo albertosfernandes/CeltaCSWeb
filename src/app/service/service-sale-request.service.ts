@@ -37,18 +37,21 @@ export class ServiceSaleRequestService {
     .get<ModelSaleRequestTemp>(this.base.urlapi + '/api/apiSaleRequest/GetTemp?_enterpriseId=' + enterpriseId +
         '&_personalizedCode=' + saleRequestTempCode + '&_considerUsing=false')
     .pipe(
-      tap()
+      tap(
+        data => console.log(data),
+        error => console.log('erro: ' + error)
+      )
     );
   }
 
   addSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
     return this.base.httpBase
-    .post(this.base.urlapi + '/api/apiSaleRequest/AddSaleRequestTemp', saleRequestTemp);
+    .post(this.base.urlapi + '/api/apiSaleRequest/AddSaleRequestTemp', saleRequestTemp, { responseType: 'text' });
   }
 
   updateSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
     return this.base.httpBase
-    .put(this.base.urlapi + '/api/apiSaleRequest/UpdateSaleRequestTemp', saleRequestTemp)
+    .put(this.base.urlapi + '/api/apiSaleRequest/UpdateSaleRequestTemp', saleRequestTemp, { responseType: 'text' })
     .pipe(
       tap(
         data => console.log(data),
@@ -64,11 +67,11 @@ export class ServiceSaleRequestService {
 
   finishSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
     return this.base.httpBase
-    .post(this.base.urlapi + '/api/apiSaleRequest/FinishSaleRequestTemp', saleRequestTemp);
+    .post(this.base.urlapi + '/api/apiSaleRequest/FinishSaleRequestTemp', saleRequestTemp, { responseType: 'text' });
   }
 
   addSaleRequest(saleRequest: ModelSaleRequest) {
     return this.base.httpBase
-    .post(this.base.urlapi + '/api/apiSaleRequest/AddSaleRequest', saleRequest);
+    .post(this.base.urlapi + '/api/apiSaleRequest/AddSaleRequest', saleRequest, { responseType: 'text' });
   }
 }
