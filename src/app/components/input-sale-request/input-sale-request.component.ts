@@ -28,7 +28,7 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
   @Output() currentTemp = new EventEmitter();
   @Output() saleRequestTempEmit = new EventEmitter();
   @Input() _productReceived;
-  personalizedCode = 'ok';
+  personalizedCode: number;
   isNew = false;
   isNewTemp = false;
   isUsingsaleRequestTemp = false;
@@ -42,7 +42,7 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
     // .pipe(debounceTime(300))
     .pipe()
     .subscribe(filter => {
-      this.personalizedCode = filter;
+      // this.personalizedCode = filter;
       this.getSaleRequest();
     },
     erro => {
@@ -89,7 +89,7 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
               this.newTemp.emit(this.isNew);
               // vms criar uma nova Temp então
               console.log('valor de personalizedCode: ' + this.personalizedCode);
-              if (this.personalizedCode !== 'ok') {
+              if (this.personalizedCode > 1) {
                 this.addSaleRequestTemp();
               }
         } else {
@@ -103,7 +103,7 @@ export class InputSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
 
   addSaleRequestTemp() {
     this.saleRequestTempNew.EnterpriseId = this.base.enterpriseId;
-    this.saleRequestTempNew.PersonalizedCode = this.personalizedCode;
+    this.saleRequestTempNew.PersonalizedCode = this.personalizedCode.toString();
     this.sub.push(
       this.serviceSaleRequest.addSaleRequestTemp(this.saleRequestTempNew)
       .subscribe(responseAdd => {

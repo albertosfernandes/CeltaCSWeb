@@ -51,7 +51,7 @@ export class ServiceSaleRequestService {
 
   updateSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
     return this.base.httpBase
-    .put(this.base.urlapi + '/api/apiSaleRequest/UpdateSaleRequestTemp', saleRequestTemp, { responseType: 'text' })
+    .post(this.base.urlapi + '/api/apiSaleRequest/UpdateSaleRequestTemp', saleRequestTemp, { responseType: 'text' })
     .pipe(
       tap(
         data => console.log(data),

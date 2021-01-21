@@ -8,8 +8,14 @@
           <div class="input-group-prepend">
             <span class="input-group-text" style="text-decoration: underline;" id="inputGroup-sizing-lg">Pedido</span>
           </div>
-          <input id="saleRequest" type="text" #saleRequest class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
+          <input id="saleRequest" type="number" #saleRequest class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
           autofocus (keyup.enter)="onclickSaleRequest($event.target.value)" [disabled]='isSaleRequestActiv' required minlength="4">
+        </div>
+        <div *ngIf="isExecutingScript">
+          <div class="spinner-border" role="status" style="margin-left: 50%;">
+           <span class="sr-only">Carregando...</span>
+          </div>
+         <p>Aguarde a consulta...</p>
         </div>
       </div>
       <div class="col-md-1">
@@ -31,12 +37,18 @@
   <div class="col-sm-3">
     <label class="font-weight-bold" for="basic-url">Produto</label>
     <div class="input-group mb-3">
-       <input type="text" id="input-product" #product class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
+       <input type="number" id="input-product" #product class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
       (keyup.enter)='onclickProduct($event.target.value)'
     />
     <!-- <div [swal]="['Oops!', 'This is not implemented yet :/', 'warning']">
       Do it!
     </div> -->
+    <div *ngIf="isExecutingProd">
+      <div class="spinner-border" role="status" style="margin-left: 50%;">
+       <span class="sr-only">Carregando...</span>
+      </div>
+     <p>Aguarde a consulta...</p>
+    </div>
     </div>
     <div class="col-sm-12">
       <label class="font-weight-bold" style="font-size: 150%;" for="subtot">Subtotal</label>

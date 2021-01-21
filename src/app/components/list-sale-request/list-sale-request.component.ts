@@ -3,6 +3,7 @@ import { ServiceSaleRequestService } from 'src/app/service/service-sale-request.
 import { ServiceBaseService } from 'src/app/service/service-base.service';
 import { ModelSaleRequest } from 'src/app/model/model-saleRequest';
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-list-sale-request',
@@ -33,8 +34,9 @@ export class ListSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
         this.saleRequest = respSaleRequ;
         console.log('valor ' + this.saleRequest);
       },
-      error => {
-        alert('Falha ao puxar pedido');
+      err => {
+        Swal.fire('Falha ao carregar pedido.', err.error, 'error');
+        // alert('Falha ao puxar pedido');
       },
       () => {
         // fim

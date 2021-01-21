@@ -34,6 +34,8 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('saleRequest') inputSaleRequest;
   _qtdInput = 1;
   messageTop = 'TERMINAL LIVRE';
+  isExecutingScript = false;
+  isExecutingProd = false;
 
   saleRequestpersonalizedCode: any;
   saleRequestTemp = new ModelSaleRequestTemp;
@@ -56,59 +58,35 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     if (!saleRequestValue) {
       Swal.fire('Número de comanda inválido.', 'Digite o código ou faça a leitura pelo scanner. ', 'warning');
     } else {
-      this.saleRequestpersonalizedCode = saleRequestValue;
+      this.saleRequestpersonalizedCode = parseInt(saleRequestValue, 10) ;
       this.getSaleRequestTemp();
 
     }
   }
 
   onclickMoreSaleRequest() {
-    this.isShowSaleReqFull = true;
+    this.isShowSaleReqFull = !this.isShowSaleReqFull;
   }
 
-  // getSaleRequest() {
-  //   // this.sub.push(
-  //     this.serviceSaleRequest.getSaleRequest(this.base.enterpriseId, this.saleRequestpersonalizedCode)
-  //   .subscribe(saleRequestData => {
-  //     this.saleRequest = saleRequestData;
-  //     // tslint:disable-next-line: max-line-length
-  // tslint:disable-next-line: max-line-length
-  //     console.log('saleReq Raiz: ' + saleRequestData.PersonalizedCode + saleRequestData.TotalLiquid + '> ' + saleRequestData.Products[0].ProductPriceLookUpCode);
-  //     // tslint:disable-next-line: max-line-length
-  // tslint:disable-next-line: max-line-length
-  //     console.log('meuSaleReq dentro do subs: ' + this.saleRequest.PersonalizedCode + '? ' + this.saleRequest.TotalLiquid  + '> ' + this.saleRequest.Products[0].ProductPriceLookUpCode + this.saleRequest.PersonalizedCode);
-  //   }, erro => {
-  //     alert('Erro ao puxar os pedidos.');
-  //   },
-  //   () => {
-  //     // finalizou
-  //     if (this.saleRequest == null || this.saleRequest === undefined) {
-  //       // entao vms ver se existe saleRequestTemp!
-  //       this.getSaleRequestTemp();
-  //     } else {
-  //       // carrega ele então
-  //       this.isSaleRequestActiv = true;
-  //       // this.isSaleRequest = true;
-  //     }
-  //   })
-  //   ;
-  // }
-
   getSaleRequestTemp() {
+    this.isExecutingScript = true;
     this.sub.push(
       this.serviceSaleRequest.getSaleRequestTemp(this.base.enterpriseId, this.saleRequestpersonalizedCode)
       .subscribe(saleRequestTempData => {
         this.saleRequestTemp = saleRequestTempData;
       },
       err => {
+        this.isExecutingScript = false;
         Swal.fire('Erro ao carregar pedidos temporário.', err.error, 'error');
       },
       () => {
         if (this.saleRequestTemp == null || this.saleRequestTemp === undefined) {
               // vms criar uma nova Temp então
+              this.isExecutingScript = false;
               this.addSaleRequestTemp();
         } else {
           // carrega ele então
+          this.isExecutingScript = false;
           this.isSaleRequestActiv = true;
           this.isSaleRequestTemp = true;
           this.inputProduct.nativeElement.focus();
@@ -120,7 +98,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
 
   addSaleRequestTemp() {
     this.saleRequestTempNew.EnterpriseId = this.base.enterpriseId;
-    this.saleRequestTempNew.PersonalizedCode = this.saleRequestpersonalizedCode;
+    this.saleRequestTempNew.PersonalizedCode = this.saleRequestpersonalizedCode.toString();
     this.sub.push(
       this.serviceSaleRequest.addSaleRequestTemp(this.saleRequestTempNew)
       .subscribe(responseAdd => {
@@ -156,17 +134,20 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getProduct(productCode) {
+      this.isExecutingProd = true;
       this.sub.push(
         this.serviceProductService.getProduct(productCode)
       .subscribe(prod => {
         this.product = prod;
       },
       err => {
+        this.isExecutingProd = false;
         Swal.fire('Erro ao consultar produto.', err.error, 'error');
         // alert(erro.error);
       },
       () => {
         // fim
+        this.isExecutingProd = false;
         if (this.product !== null) {
           this.messageTop = this.product.NameReduced;
           this.updateSaleRequestTempProduct(this.product);

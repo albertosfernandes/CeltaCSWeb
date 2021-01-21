@@ -14,6 +14,8 @@ export class ModelProduct {
   OfferRetailPrice: number;
   WholeSalePrice: number;
   WholeOfferPrice: number;
+  OfferECommercePrice: number;
+  SaleECommercePrice: number;
   LiquidCost: number;
   LiquidCostMiddle: number;
   LiquidCostReal: number;
@@ -37,6 +39,7 @@ export class ModelProduct {
   CSTPisCofins: string;
   ProductIsFatherComposition: number;
   QuantityMinimumWholeSale: number;
+  QuantityMinimumWholeSaleByClass: number;
   AllowFractionate: boolean;
   IsBalance: boolean;
   CanBeWeightyInPdv: boolean;
@@ -46,9 +49,13 @@ export class ModelProduct {
   IsAlcoholicProduct: boolean;
   BalanceTare: number;
   CodeClass: string;
+  FamilyCode: number;
   DepartmentCode: number;
+  DepartmentName: string;
+  SectionName: string;
   SectionCode: number;
   GroupCode: number;
+  GroupName: string;
   SubGroupCode: number;
   DateOfLastChanged: string;
   StockQuantity: number;
