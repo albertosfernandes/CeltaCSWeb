@@ -10,6 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { WindowSaleComponent } from './components/window-sale/window-sale.component';
 import { ListSaleRequestComponent } from './components/list-sale-request/list-sale-request.component';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
   ],
   imports: [
     BrowserModule,
+    NgbModule.forRoot(),
     HttpClientModule,
     SweetAlert2Module.forRoot()
   ],

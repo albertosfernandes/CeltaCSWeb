@@ -1,3 +1,4 @@
+import { ModelTicket } from './../model/model-ticket';
 import { ServiceBaseService } from './service-base.service';
 import { Injectable } from '@angular/core';
 import { map, catchError, tap  } from 'rxjs/operators';
@@ -43,6 +44,29 @@ export class ServiceSaleRequestService {
       )
     );
   }
+
+  getExistTicketAccessControl() {
+    return this.base.httpBase
+    .get<boolean>(this.base.urlapi + '/api/APISaleRequest/ExistTicketAccessControl')
+    .pipe(
+      tap(
+        data => console.log(data),
+        error => console.log('erro: ' + error)
+      )
+    );
+  }
+
+  getTicketAccessControl(personalizedCode) {
+    return this.base.httpBase
+    .get<ModelTicket>(this.base.urlapi + '/api/APISaleRequest/TicketIsPermited?_personalizedCode=' + personalizedCode)
+    .pipe(
+      tap(
+        data => console.log(data),
+        error => console.log('erro: ' + error)
+      )
+    );
+  }
+
 
   addSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
     return this.base.httpBase

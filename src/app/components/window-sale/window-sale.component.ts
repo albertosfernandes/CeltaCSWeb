@@ -1,3 +1,5 @@
+import { ModelTicket } from './../../model/model-ticket';
+import { ModelGroup } from './../../model/model-group';
 import { ModelSaleRequestProduct } from './../../model/model-saleRequestProduct';
 import { ModelSaleRequestTemp } from './../../model/model-saleRequestTemp';
 import { ModelProduct } from './../../model/model-product';
@@ -11,6 +13,8 @@ import { ServiceSaleRequestService } from 'src/app/service/service-sale-request.
 import { ModelSaleRequest } from 'src/app/model/model-saleRequest';
 import Swal from 'sweetalert2';
 import { error } from 'protractor';
+import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import { analyzeAndValidateNgModules } from '@angular/compiler';
 
 
 
@@ -23,6 +27,8 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
 
   debounce: Subject<string> = new Subject<string>();
   sub: Subscription[] = [];
+  groups: ModelGroup[] = [];
+  products: ModelProduct[] = [];
   isUsingsaleRequestTemp = false;
   isSaleRequestTemp = false;
   isSaleRequest = false;
@@ -36,8 +42,10 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   messageTop = 'TERMINAL LIVRE';
   isExecutingScript = false;
   isExecutingProd = false;
+  closeResult: string;
 
   saleRequestpersonalizedCode: any;
+  ticketAccessControl: ModelTicket;
   saleRequestTemp = new ModelSaleRequestTemp;
   saleRequestTempNew = new ModelSaleRequestTemp;
   saleRequest = new ModelSaleRequest;
@@ -48,19 +56,66 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   saleRequestProduct = new ModelSaleRequestProduct;
   product = new ModelProduct;
   countProducts = 0;
+  isModal = false;
+  isModalProd = false;
+  color = 'rgb(67, 125, 83)';
+  isTicketAccessControl: any;
+  myDate = new Date();
 
 
   constructor(private serviceSaleRequestProduct: ServiceSaleRequestProductService, private serviceProduct: ServiceProductService,
               private serviceSaleRequest: ServiceSaleRequestService, private base: ServiceBaseService,
-              private serviceProductService: ServiceProductService) { }
+              private serviceProductService: ServiceProductService, private modalService: NgbModal) { }
 
   onclickSaleRequest(saleRequestValue) {
     if (!saleRequestValue) {
       Swal.fire('Número de comanda inválido.', 'Digite o código ou faça a leitura pelo scanner. ', 'warning');
     } else {
-      this.saleRequestpersonalizedCode = parseInt(saleRequestValue, 10) ;
-      this.getSaleRequestTemp();
+      this.isTicketAccessControl = this.serviceSaleRequest.getExistTicketAccessControl();
+      if (this.isTicketAccessControl) {
+        // Valida se posso usar entao saleRequestValue
+        this.saleRequestpersonalizedCode = parseInt(saleRequestValue, 10) ;
+        this.getTicketAccessControl(saleRequestValue);
+      } else {
+        this.saleRequestpersonalizedCode = parseInt(saleRequestValue, 10) ;
+        this.getSaleRequestTemp();
+      }
+    }
+  }
 
+  getTicketAccessControl(saleRequestTicketValue) {
+    this.isExecutingScript = true;
+    this.sub.push(
+      this.serviceSaleRequest.getTicketAccessControl(saleRequestTicketValue)
+      .subscribe(ticketData => {
+        this.ticketAccessControl = ticketData;
+      },
+      err => {
+        this.isExecutingScript = false;
+        Swal.fire('Erro ao carregar comandas de catraca.', err.error, 'error');
+      },
+      () => {
+        if (this.ticketAccessControl === null) {
+          Swal.fire('Comanda não cadastrada!', ' ', 'warning');
+          this.isExecutingScript = false;
+        } else {
+          this.validTicketAcessControl(this.ticketAccessControl);
+        }
+      })
+    );
+  }
+
+  validTicketAcessControl(_ticketAccessControl: ModelTicket) {
+    const hour = _ticketAccessControl.DateHourLastRelease.toString();
+    const h = hour.substring(11);
+    const h1 = h.substring(0, 2);
+    const hourExpire = (this.myDate.getHours() + 5);
+    if ( Number(h1) > hourExpire) {
+      Swal.fire('Comanda Bloqueada!',
+      'Esta comanda está bloqueada devido ao tempo desde sua última utilização que são de 5 horas. ', 'warning');
+      this.isExecutingScript = false;
+    } else {
+      this.getSaleRequestTemp();
     }
   }
 
@@ -125,13 +180,148 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       // this.clearInputProduct();
     } else {
       if (!value) {
-        Swal.fire('Produto não encontrado.',
-        'Para consulta digite apenas números ou faça a leitura do código de barras no scanner.', 'warning');
+        // esta vazio sera que é pesquisa de produto?
+        this.getGroups();
       } else {
         this.getProduct(value);
       }
     }
     }
+
+    getGroups() {
+      console.log('chame getGroups');
+      this.sub.push(
+        this.serviceProductService.getGroups()
+        .subscribe(groups => {
+          this.groups = groups;
+        },
+        err => {
+          Swal.fire('Erro.',
+        'Houve uma falha durante requisição de grupos.', 'error');
+        },
+        () => {
+          if (!this.groups.length) {
+            Swal.fire('Produto não encontrado.',
+            'Para consulta digite apenas números ou faça a leitura do código de barras no scanner.', 'warning');
+          } else {
+              // exibir a lista de grupos
+              console.log('itens' + this.groups[0].Name);
+              this.showSelectGroups();
+
+
+            }
+          })
+        );
+    }
+
+    getProductsByGroup(groupId) {
+      console.log('chame getGroups');
+      this.sub.push(
+        this.serviceProductService.getProductsByGroup(groupId)
+        .subscribe(productsArray => {
+          this.products = productsArray;
+        },
+        err => {
+          Swal.fire('Erro.',
+        'Houve uma falha durante requisição de produtos.', 'error');
+        },
+        () => {
+          if (!this.products.length) {
+            Swal.fire('Nenhum produto foi encontrado neste grupo.',
+            'Para consulta digite apenas números ou faça a leitura do código de barras no scanner.', 'warning');
+          } else {
+              // exibir a lista de grupos
+              console.log('itens' + this.products[0].Name);
+              this.showSelectProducts();
+            }
+          })
+        );
+    }
+
+    // open(content) {
+    //   this.modalService.open(content, ).result.then((result) => {
+    //     this.closeResult = `Closed with: ${result}`;
+    //   }, (reason) => {
+    //     this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    //   });
+    // }
+
+    // private getDismissReason(reason: any): string {
+    //   if (reason === ModalDismissReasons.ESC) {
+    //     return 'by pressing ESC';
+    //   } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+    //     return 'by clicking on a backdrop';
+    //   } else {
+    //     return  `with: ${reason}`;
+    //   }
+    // }
+
+    showSelectGroups() {
+      this.isModal = !this.isModal;
+      this.color = 'rgb(14, 26, 17)';
+      // this.getGroups();
+    }
+
+    showSelectProducts() {
+      this.isModal = false;
+      this.isModalProd = !this.isModalProd;
+      this.color = 'rgb(14, 26, 17)';
+      // this.getGroups();
+    }
+
+    closeSelectGroups() {
+      this.isModal = false;
+      this.isModalProd = false;
+      this.color = 'rgb(67, 125, 83)';
+    }
+
+    selectGroup(groupId) {
+      console.log('Valor do grupo: ' + groupId);
+      this.getProductsByGroup(groupId);
+      this.isModal = false;
+      this.color = 'rgb(67, 125, 83)';
+    }
+
+    selectProd(productId) {
+      console.log(productId);
+      this.isModalProd = false;
+      this.color = 'rgb(67, 125, 83)';
+    }
+    // showSelectGroups() {
+    //   const { value: fruit } = await Swal.fire({
+    //     title: 'Select field validation',
+    //     input: 'select',
+    //     inputOptions: {
+    //       'Fruits': {
+    //         apples: 'Apples',
+    //         bananas: 'Bananas',
+    //         grapes: 'Grapes',
+    //         oranges: 'Oranges'
+    //       },
+    //       'Vegetables': {
+    //         potato: 'Potato',
+    //         broccoli: 'Broccoli',
+    //         carrot: 'Carrot'
+    //       },
+    //       'icecream': 'Ice cream'
+    //     },
+    //     inputPlaceholder: 'Select a fruit',
+    //     showCancelButton: true,
+    //     inputValidator: (value) => {
+    //       return new Promise((resolve) => {
+    //         if (value === 'oranges') {
+    //           resolve()
+    //         } else {
+    //           resolve('You need to select oranges :)')
+    //         }
+    //       })
+    //     }
+    //   })
+
+    //   if (fruit) {
+    //     Swal.fire(`You selected: ${fruit}`)
+    //   }
+    // }
 
     getProduct(productCode) {
       this.isExecutingProd = true;

@@ -1,5 +1,5 @@
 <!-- < class="bg-dark" style="position: fixed; width: 100%; height: 100%;"> -->
-<div style=" width: 100%; height: 100%; background-color: rgb(67, 125, 83)">
+<div style=" width: 100%; height: 100%; background-color: rgb(67, 125, 83)" >
   <div class="conteiner-fluid p-3 mb-2 text-white">
 
     <div class="row">
@@ -40,9 +40,9 @@
        <input type="number" id="input-product" #product class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
       (keyup.enter)='onclickProduct($event.target.value)'
     />
-    <!-- <div [swal]="['Oops!', 'This is not implemented yet :/', 'warning']">
-      Do it!
-    </div> -->
+   <div>
+
+   </div>
     <div *ngIf="isExecutingProd">
       <div class="spinner-border" role="status" style="margin-left: 50%;">
        <span class="sr-only">Carregando...</span>
@@ -123,3 +123,39 @@
 
   <app-list-sale-request *ngIf="isShowSaleReqFull" [saleRequestPersonalizedCode]='saleRequestpersonalizedCode'></app-list-sale-request>
 </div>
+
+<!-- <button type="button" class="btn btn-outline-light ml-3" (click)='showSelectGroups()'  >Celta</button> -->
+<!-- <button type="button" class="btn btn-outline-light ml-3" (click)='closeSelectGroups()' *ngIf="isModal" >Close</button> -->
+<!-- <button type="button" class="btn btn-outline-light ml-3" (click)='open(mymodal)' >Show</button> -->
+<!-- <ng-template #mymodal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Selecione o grupo de produtos</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <ul class="list-group">
+      <li class="list-group-item">Bebidas</li>
+      <li class="list-group-item">Refeições</li>
+      <li class="list-group-item">Sorvetes</li>
+      <li class="list-group-item">Outros</li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Ok</button>
+  </div>
+</ng-template> -->
+
+<div class="celtamodal" *ngIf="isModal" style=" width: 100%;">
+  <ul class="list-group"  *ngFor="let group of groups" >
+    <li class="list-group-item" style="text-align: center;background-color: rgb(130, 226, 154)" (click)="selectGroup(group.ExpansibleGroupId)" ><b>{{group.Name}}</b></li>
+  </ul>
+</div>
+
+<div class="productsmodal" *ngIf="isModalProd" style=" width: 100%;">
+  <ul class="list-group"  *ngFor="let prod of products" >
+    <li class="list-group-item" style="text-align: center;background-color: rgb(130, 226, 154)" (click)="selectProd(prod.ProductsId)" ><b>{{prod.NameReduced}}</b></li>
+  </ul>
+</div>
+
