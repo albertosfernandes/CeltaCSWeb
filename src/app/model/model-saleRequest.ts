@@ -13,4 +13,5 @@ export class ModelSaleRequest {
     TotalLiquid: number;
     FlagOrigin: number;
     Products: ModelSaleRequestProduct[];
+    DeliveryControl: number;
 }

@@ -6,4 +6,5 @@ export class ModelSaleRequestTemp {
   EnterpriseId: number;
   TotalLiquid: number;
   Products: ModelSaleRequestProductTemp[];
+  DeliveryControl: number;
 }

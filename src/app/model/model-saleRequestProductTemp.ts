@@ -11,4 +11,5 @@ export class ModelSaleRequestProductTemp {
   Product: ModelProduct;
   SaleRequestTemp: ModelSaleRequestTemp;
   SaleRequestTempId: number;
+  Comments: string;
 }

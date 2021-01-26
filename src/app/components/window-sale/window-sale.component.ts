@@ -61,6 +61,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   color = 'rgb(67, 125, 83)';
   isTicketAccessControl: any;
   myDate = new Date();
+  comments: string;
 
 
   constructor(private serviceSaleRequestProduct: ServiceSaleRequestProductService, private serviceProduct: ServiceProductService,
@@ -132,7 +133,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       },
       err => {
         this.isExecutingScript = false;
-        Swal.fire('Erro ao carregar pedidos temporário.', err.error, 'error');
+        Swal.fire('Erro ao carregar pedidos temporário.', err, 'error');
       },
       () => {
         if (this.saleRequestTemp == null || this.saleRequestTemp === undefined) {
@@ -175,9 +176,10 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
 
 
   onclickProduct(value) {
-    if (value.includes('*')) {
+    if (value.includes('.')) {
       this._qtdInput = value.substring(0, 1); // .emit(filter.substring(0, 1));
-      // this.clearInputProduct();
+      const p = value.substring(2);
+      this.getProduct(p);
     } else {
       if (!value) {
         // esta vazio sera que é pesquisa de produto?
@@ -238,23 +240,6 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         );
     }
 
-    // open(content) {
-    //   this.modalService.open(content, ).result.then((result) => {
-    //     this.closeResult = `Closed with: ${result}`;
-    //   }, (reason) => {
-    //     this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-    //   });
-    // }
-
-    // private getDismissReason(reason: any): string {
-    //   if (reason === ModalDismissReasons.ESC) {
-    //     return 'by pressing ESC';
-    //   } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-    //     return 'by clicking on a backdrop';
-    //   } else {
-    //     return  `with: ${reason}`;
-    //   }
-    // }
 
     showSelectGroups() {
       this.isModal = !this.isModal;
@@ -287,41 +272,6 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       this.isModalProd = false;
       this.color = 'rgb(67, 125, 83)';
     }
-    // showSelectGroups() {
-    //   const { value: fruit } = await Swal.fire({
-    //     title: 'Select field validation',
-    //     input: 'select',
-    //     inputOptions: {
-    //       'Fruits': {
-    //         apples: 'Apples',
-    //         bananas: 'Bananas',
-    //         grapes: 'Grapes',
-    //         oranges: 'Oranges'
-    //       },
-    //       'Vegetables': {
-    //         potato: 'Potato',
-    //         broccoli: 'Broccoli',
-    //         carrot: 'Carrot'
-    //       },
-    //       'icecream': 'Ice cream'
-    //     },
-    //     inputPlaceholder: 'Select a fruit',
-    //     showCancelButton: true,
-    //     inputValidator: (value) => {
-    //       return new Promise((resolve) => {
-    //         if (value === 'oranges') {
-    //           resolve()
-    //         } else {
-    //           resolve('You need to select oranges :)')
-    //         }
-    //       })
-    //     }
-    //   })
-
-    //   if (fruit) {
-    //     Swal.fire(`You selected: ${fruit}`)
-    //   }
-    // }
 
     getProduct(productCode) {
       this.isExecutingProd = true;
@@ -340,6 +290,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         this.isExecutingProd = false;
         if (this.product !== null) {
           this.messageTop = this.product.NameReduced;
+
           this.updateSaleRequestTempProduct(this.product);
         } else {
           // alert('Produto não encontrado');
@@ -357,6 +308,38 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
 
     clearInputSaleRequest() {
       this.inputSaleRequest.nativeElement.value = '';
+    }
+
+    onclickProductComments(saleRequestProductIdValue) {
+      Swal.fire({
+        title: 'Observação',
+        text: 'Inserir observação sobre o produto',
+        input: 'text',
+        showCancelButton: true ,
+        confirmButtonColor: 'green'
+        }).then((result) => {
+        if (result.value) {
+            this.comments = result.value;
+            this.sendCommentsProduct(this.comments, saleRequestProductIdValue);
+        } else {
+          // nenhuma observação adicionada
+        }});
+    }
+
+    sendCommentsProduct(_comments, _saleRequestProductIdValue) {
+      this.sub.push(
+        this.serviceSaleRequestProduct.addSaleRequestProductComments(_comments, _saleRequestProductIdValue)
+        .subscribe(resp => {
+
+        },
+        err => {
+          Swal.fire('Erro ao atualizar observação de pedido.', err.error, 'error');
+        },
+        () => {
+          this.saleRequestProductTemp.Comments = _comments;
+          this.getSaleRequestTemp();
+        })
+      );
     }
 
     updateSaleRequestTempProduct(_product: ModelProduct) {
@@ -400,12 +383,9 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       );
     }
 
-
-
-
-  onclickCancel() {
-    this.isCancel = true;
-  }
+  // onclickCancel() {
+  //   this.isCancel = true;
+  // }
 
   sendCancelItem(idSaleRequestProductTemp) {
     this.sub.push(
@@ -425,10 +405,21 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   onclickSave() {
-    // this.populeSaleRequest(this.saleRequestTemp);
-    this.finishSaleRequestTemp(this.saleRequestTemp);
-
-  }
+      Swal.fire({
+      title: 'Pedido com entrega?',
+      text: 'Informe o número da bandeira:',
+      input: 'number',
+      showCancelButton: true ,
+      confirmButtonColor: 'green'
+      }).then((result) => {
+      if (result.value) {
+          // Swal.fire('Result:' + result.value);
+          this.saleRequestTemp.DeliveryControl = result.value;
+          this.finishSaleRequestTemp(this.saleRequestTemp);
+      } else {
+        this.finishSaleRequestTemp(this.saleRequestTemp);
+      }});
+    }
 
   finishSaleRequestTemp(_saleReqtemp) {
     this.sub.push(
@@ -452,39 +443,6 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       })
     );
   }
-
-  // populeSaleRequest(saleReqTemp: ModelSaleRequestTemp) {
-  //   this.saleRequestNew.DateHourOfCreation = 'Horario!!';
-  //   this.saleRequestNew.DateOfCreation = 'somente dada';
-  //   this.saleRequestNew.EnterpriseId = this.base.enterpriseId;
-  //   this.saleRequestNew.FlagOrigin = '2';
-  //   this.saleRequestNew.FlagStatus = 'ABERTO';
-  //   this.saleRequestNew.IsCancelled = false;
-  //   this.saleRequestNew.IsUsing = false;
-  //   this.saleRequestNew.Peoples = 1;
-  //   this.saleRequestNew.PersonalizedCode = saleReqTemp.PersonalizedCode;
-  //   this.saleRequestNew.TotalLiquid = this.saleRequestTemp.TotalLiquid;
-  //   this.populeSaleRequestProduct(saleReqTemp.Products);
-  // }
-  // populeSaleRequestProduct(saleRedProd: ModelSaleRequestProductTemp[]) {
-  //   saleRedProd.forEach(p => {
-  //     this.saleRequestProduct.Comments = null;
-  //     this.saleRequestProduct.DateHourOfCreation = '';
-  //     this.saleRequestProduct.IsCancelled = false;
-  //     this.saleRequestProduct.IsDelivered = false;
-  //     this.saleRequestProduct.ProductInternalCodeOnErp = p.Product.InternalCodeOnERP;
-  //     this.saleRequestProduct.ProductPriceLookUpCode = p.ProductPriceLookUpCode;
-  //     this.saleRequestProduct.ProductionStatus = 0;
-  //     this.saleRequestProduct.Quantity = p.Quantity;
-  //     // this.saleRequestProduct.SaleRequestId =  ?????
-  //     this.saleRequestProduct.TotalLiquid = p.TotalLiquid;
-  //     this.saleRequestProduct.Value = p.Value;
-  //     this.saleRequestProducts[] = [];
-  //     this.saleRequestProducts.push(this.saleRequestProduct);
-  //   });
-  //   this.saleRequestNew.Products = this.saleRequestProducts;
-  //   this.addSaleRequest(this.saleRequestNew);
-  // }
 
 
   addSaleRequest(_saleRequest: ModelSaleRequest) {

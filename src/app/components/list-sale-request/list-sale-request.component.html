@@ -1,4 +1,4 @@
-<div class="border border-dark rounded p-3 bg-white text-dark" *ngIf="isShow"  >
+<div class="border border-dark rounded p-3 bg-white text-dark mb-2" *ngIf="isShow"  >
   <div class="table-responsive">
     <table class="table">
       <thead class="thead-dark">
@@ -23,13 +23,16 @@
           <td>{{ p.Quantity }}</td>
           <td>{{p.Value | number : '1.2-2'}}</td>
           <td>{{p.TotalLiquid | number : '1.2-2'}}</td>
-          <!-- <td *ngIf="isCancel" (click)='sendCancelItem(p.SaleRequestProductId)'><span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td> -->
+          <td *ngIf="isCancelSaleReq" (click)='sendCancelItem(p.SaleRequestProductId)'><span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td>
         </tr>
       </tbody>
     </table>
+    <div>
+      <button type="button" class="btn btn-outline-dark ml-3" (click)='onclickShowCancel()' >Cancelar</button>
+    </div>
   </div>
 
-  <div class="col-sm-3">
+  <div class="col-sm-3 mt-2">
     <div class="border border-success">
       <p class="ml-2" style="font-size: 150%;"><strong style="color: red;">Subtotal:</strong> <strong> R${{saleRequest.TotalLiquid | number: '1.2-2'}}</strong> </p>
     </div>

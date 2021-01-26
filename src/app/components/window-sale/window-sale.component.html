@@ -6,7 +6,7 @@
       <div class="col-md-2">
         <div class="input-group input-group-lg">
           <div class="input-group-prepend">
-            <span class="input-group-text" style="text-decoration: underline;" id="inputGroup-sizing-lg">Pedido</span>
+            <span class="input-group-text" style="text-decoration: underline;" id="inputGroup-sizing-lg">Comanda</span>
           </div>
           <input id="saleRequest" type="number" #saleRequest class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
           autofocus (keyup.enter)="onclickSaleRequest($event.target.value)" [disabled]='isSaleRequestActiv' required minlength="4">
@@ -76,36 +76,22 @@
         </thead>
         <tbody>
           <tr *ngFor="let product of saleRequestTemp?.Products; let indexProducts=index" >
-            <th scope="row">{{indexProducts + 1}}</th>
+            <th scope="row" (click)='onclickProductComments(product.SaleRequestProductTempId)'>{{indexProducts + 1}}</th>
             <td>{{product.ProductPriceLookUpCode}}</td>
             <td>{{product.Product?.EanCode}}</td>
             <td>{{product.Product?.NameReduced}}</td>
             <td>{{ product.Quantity }}</td>
             <td>{{product.Value | number : '1.2-2'}}</td>
             <td>{{product.TotalLiquid | number : '1.2-2'}}</td>
-            <td *ngIf="isCancel" (click)='sendCancelItem(product.SaleRequestProductTempId)'><span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td>
+            <td (click)='sendCancelItem(product.SaleRequestProductTempId)' style="background-color: red;">
+              <span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
-
-
   </div>
-
 </div>
-<!-- <div class="row">
-    <div class="col-sm-3">
-      <label class="font-weight-bold" style="font-size: 150%;" for="subtot">Subtotal</label>
-      <div class="border border-success bg-white">
-        <p class="ml-2" id='subtot' style="color:black"><strong> R$ {{saleRequestTemp.TotalLiquid}}</strong> </p>
-      </div>
-    </div>
-</div> -->
-
-
-
-
 
     <div class="row justify-content-md-center" *ngIf="isSaleRequestActiv" >
       <div class="row ">
@@ -113,7 +99,7 @@
           <button type="button" class="btn btn-outline-light ml-3" (click)='onclickSave()' >Salvar</button>
           <button type="button" class="btn btn-outline-light ml-3" *ngIf="isSaleRequest && isSaleRequestActiv" >Alterar</button>
           <button type="button" class="btn btn-outline-light ml-3"  *ngIf="isPrinted" >Imprimir</button>
-          <button type="button" class="btn btn-outline-light ml-3" (click)='onclickCancel()'>Cancelar</button>
+          <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='onclickCancel()'>Cancelar</button> -->
           <button type="button" class="btn btn-outline-light ml-3" (click)='onclickMoreSaleRequest()'>Exibir</button>
         </div>
       </div>
@@ -127,35 +113,4 @@
 <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='showSelectGroups()'  >Celta</button> -->
 <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='closeSelectGroups()' *ngIf="isModal" >Close</button> -->
 <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='open(mymodal)' >Show</button> -->
-<!-- <ng-template #mymodal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Selecione o grupo de produtos</h4>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">×</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <ul class="list-group">
-      <li class="list-group-item">Bebidas</li>
-      <li class="list-group-item">Refeições</li>
-      <li class="list-group-item">Sorvetes</li>
-      <li class="list-group-item">Outros</li>
-    </ul>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Ok</button>
-  </div>
-</ng-template> -->
-
-<div class="celtamodal" *ngIf="isModal" style=" width: 100%;">
-  <ul class="list-group"  *ngFor="let group of groups" >
-    <li class="list-group-item" style="text-align: center;background-color: rgb(130, 226, 154)" (click)="selectGroup(group.ExpansibleGroupId)" ><b>{{group.Name}}</b></li>
-  </ul>
-</div>
-
-<div class="productsmodal" *ngIf="isModalProd" style=" width: 100%;">
-  <ul class="list-group"  *ngFor="let prod of products" >
-    <li class="list-group-item" style="text-align: center;background-color: rgb(130, 226, 154)" (click)="selectProd(prod.ProductsId)" ><b>{{prod.NameReduced}}</b></li>
-  </ul>
-</div>
 
