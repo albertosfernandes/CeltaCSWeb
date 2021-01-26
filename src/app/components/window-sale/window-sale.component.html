@@ -1,6 +1,36 @@
 <!-- < class="bg-dark" style="position: fixed; width: 100%; height: 100%;"> -->
 <div style=" width: 100%; height: 100%; background-color: rgb(67, 125, 83)" >
   <div class="conteiner-fluid p-3 mb-2 text-white">
+    <!-- <div *ngIf="isModal" >
+      <div class="wrapper"  >
+        <div class="box" *ngFor="let group of groups">{{group.Name}}</div>
+      </div>
+    </div> -->
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel" style="color: black;">Selecione a opção:</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="wrapper"  *ngIf="isModal" >
+              <div class="box" *ngFor="let group of groups" (click)='selectGroup(group.ExpansibleGroupId)'>{{group.Name}}</div>
+            </div>
+            <div class="wrapper"  *ngIf="isModalProd" >
+              <div class="box" *ngFor="let prod of products" (click)='getProductsByGroup(prod.InternalCodeOnERP)'>{{prod.NameReduced}}</div>
+            </div>
+          </div>
+          <!-- <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div> -->
+        </div>
+      </div>
+    </div>
 
     <div class="row">
       <div class="col-md-2">
@@ -106,11 +136,11 @@
 
     </div>
   </div>
-
+  <button type="button" class="btn btn-outline-light ml-3" (click)='showSelectGroups()' data-toggle="modal" data-target="#exampleModal" >Pesquisar</button>
   <app-list-sale-request *ngIf="isShowSaleReqFull" [saleRequestPersonalizedCode]='saleRequestpersonalizedCode'></app-list-sale-request>
 </div>
 
-<!-- <button type="button" class="btn btn-outline-light ml-3" (click)='showSelectGroups()'  >Celta</button> -->
+
 <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='closeSelectGroups()' *ngIf="isModal" >Close</button> -->
 <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='open(mymodal)' >Show</button> -->
 

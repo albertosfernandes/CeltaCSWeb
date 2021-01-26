@@ -183,7 +183,8 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       if (!value) {
         // esta vazio sera que é pesquisa de produto?
-        this.getGroups();
+        Swal.fire('Atenção.',
+        'Digite um código de produto ou passe no scanner.', 'warning');
       } else {
         this.getProduct(value);
       }
@@ -208,9 +209,8 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
           } else {
               // exibir a lista de grupos
               console.log('itens' + this.groups[0].Name);
-              this.showSelectGroups();
-
-
+              this.isModal = true;
+              // this.showSelectGroups();
             }
           })
         );
@@ -234,6 +234,8 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
           } else {
               // exibir a lista de grupos
               console.log('itens' + this.products[0].Name);
+              this.isModalProd = true;
+              this.isModal = false;
               this.showSelectProducts();
             }
           })
@@ -242,14 +244,15 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
 
 
     showSelectGroups() {
-      this.isModal = !this.isModal;
+      // this.isModal = true;
       this.color = 'rgb(14, 26, 17)';
+      this.getGroups();
       // this.getGroups();
     }
 
     showSelectProducts() {
-      this.isModal = false;
-      this.isModalProd = !this.isModalProd;
+      // this.isModal = false;
+      // this.isModalProd = !this.isModalProd;
       this.color = 'rgb(14, 26, 17)';
       // this.getGroups();
     }
@@ -261,15 +264,15 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     selectGroup(groupId) {
+      this.isModal = false;
       console.log('Valor do grupo: ' + groupId);
       this.getProductsByGroup(groupId);
-      this.isModal = false;
       this.color = 'rgb(67, 125, 83)';
     }
 
     selectProd(productId) {
       console.log(productId);
-      this.isModalProd = false;
+      // this.isModalProd = false;
       this.color = 'rgb(67, 125, 83)';
     }
 
