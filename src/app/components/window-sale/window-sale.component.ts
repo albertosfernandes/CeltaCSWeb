@@ -62,6 +62,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   isTicketAccessControl: any;
   myDate = new Date();
   comments: string;
+  isShowProductInput = false;
 
 
   constructor(private serviceSaleRequestProduct: ServiceSaleRequestProductService, private serviceProduct: ServiceProductService,
@@ -139,10 +140,12 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         if (this.saleRequestTemp == null || this.saleRequestTemp === undefined) {
               // vms criar uma nova Temp então
               this.isExecutingScript = false;
+              this.isShowProductInput = true;
               this.addSaleRequestTemp();
         } else {
           // carrega ele então
           this.isExecutingScript = false;
+          this.isShowProductInput = true;
           this.isSaleRequestActiv = true;
           this.isSaleRequestTemp = true;
           this.inputProduct.nativeElement.focus();
@@ -436,6 +439,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       },
       () => {
         this.clearInputSaleRequest();
+        this.isShowProductInput = false;
         this.isSaleRequestActiv = false;
         this.isSaleRequestTemp = false;
         this.saleRequestTemp = new ModelSaleRequestTemp;

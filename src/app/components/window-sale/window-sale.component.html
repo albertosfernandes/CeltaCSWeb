@@ -64,7 +64,7 @@
 
 
 <div class="row">
-  <div class="col-sm-3">
+  <div class="col-sm-3" *ngIf="isShowProductInput" >
     <label class="font-weight-bold" for="basic-url">Produto</label>
     <div class="input-group mb-3">
        <input type="number" id="input-product" #product class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
@@ -96,7 +96,7 @@
           <tr>
             <th scope="col">Item</th>
             <th scope="col">PLU</th>
-            <th scope="col">EAN</th>
+            <!-- <th scope="col">EAN</th> -->
             <th scope="col">PRODUTO</th>
             <th scope="col">QTD</th>
             <th scope="col">UNIT.</th>
@@ -108,7 +108,7 @@
           <tr *ngFor="let product of saleRequestTemp?.Products; let indexProducts=index" >
             <th scope="row" (click)='onclickProductComments(product.SaleRequestProductTempId)'>{{indexProducts + 1}}</th>
             <td>{{product.ProductPriceLookUpCode}}</td>
-            <td>{{product.Product?.EanCode}}</td>
+            <!-- <td>{{product.Product?.EanCode}}</td> -->
             <td>{{product.Product?.NameReduced}}</td>
             <td>{{ product.Quantity }}</td>
             <td>{{product.Value | number : '1.2-2'}}</td>
