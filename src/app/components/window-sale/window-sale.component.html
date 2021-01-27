@@ -99,7 +99,7 @@
             <td>{{product.ProductPriceLookUpCode}}</td>
             <!-- <td>{{product.Product?.EanCode}}</td>  -->
             <td>{{product.Product?.NameReduced}}</td>
-            <td><span style="color: red;" (click)='onclickMinusQuantity(product.SaleRequestProductTempId)' *ngIf="product.Quantity > 0" ><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
+            <td><span style="color: red;" (click)='onclickMinusQuantity(product.SaleRequestProductTempId)' *ngIf="product.Quantity > 1" ><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
               {{ product.Quantity }}
               <span style="color: green;" (click)='onclickPlusQuantity(product.SaleRequestProductTempId)'><i class="fa fa-plus-circle" aria-hidden="true"></i></span></td>
             <td>{{product.Value | number : '1.2-2'}}</td>
