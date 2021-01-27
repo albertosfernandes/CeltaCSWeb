@@ -42,4 +42,26 @@ export class ServiceProductService {
       )
     );
   }
+
+  updatePlusQuantity(saleRequestProductId) {
+    return this.base.httpBase
+    .get(this.base.urlapi + '/api/APISaleRequestProduct/UpdateQuantityPlus?_saleRequestProductTempId=' + saleRequestProductId)
+    .pipe(
+      tap(
+        data => console.log(data),
+        err => console.log(err.error)
+      )
+    );
+  }
+
+  updateMinusQuantity(saleRequestProductId) {
+    return this.base.httpBase
+    .get(this.base.urlapi + '/api/APISaleRequestProduct/UpdateQuantityMinus?_saleRequestProductTempId=' + saleRequestProductId)
+    .pipe(
+      tap(
+        data => console.log(data),
+        err => console.log(err.error)
+      )
+    );
+  }
 }

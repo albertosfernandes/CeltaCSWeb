@@ -129,7 +129,7 @@ export class ListSaleRequestComponent implements OnInit, OnChanges, OnDestroy {
       },
       () => {
         // fim
-        this.isCancelSaleReq = false;
+        // this.isCancelSaleReq = false;
         this.loadSaleRequest(this.saleRequestPersonalizedCode);
       })
     );

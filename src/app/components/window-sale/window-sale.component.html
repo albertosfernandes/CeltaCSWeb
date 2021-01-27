@@ -1,18 +1,12 @@
-<!-- < class="bg-dark" style="position: fixed; width: 100%; height: 100%;"> -->
 <div style=" width: 100%; height: 100%; background-color: rgb(67, 125, 83)" >
   <div class="conteiner-fluid p-3 mb-2 text-white">
-    <!-- <div *ngIf="isModal" >
-      <div class="wrapper"  >
-        <div class="box" *ngFor="let group of groups">{{group.Name}}</div>
-      </div>
-    </div> -->
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" #childModal id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel" style="color: black;">Selecione a opção:</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" #closebutton (click)='closeModal()' class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -20,14 +14,13 @@
             <div class="wrapper"  *ngIf="isModal" >
               <div class="box" *ngFor="let group of groups" (click)='selectGroup(group.ExpansibleGroupId)'>{{group.Name}}</div>
             </div>
-            <div class="wrapper"  *ngIf="isModalProd" >
-              <div class="box" *ngFor="let prod of products" (click)='getProductsByGroup(prod.InternalCodeOnERP)'>{{prod.NameReduced}}</div>
+
+            <div class="celtamodal" *ngIf="isModalProd">
+              <ul class="list-group" *ngFor="let prod of products" (click)='getProductsByGroup(prod.InternalCodeOnERP)'>
+                <li class="list-group-item" (click)='onclickSelctProduct(prod.PriceLookupCode)'> {{prod.NameReduced}} | <span style="color: red;"> R$: {{prod.SaleRetailPraticedString}}</span></li>
+              </ul>
             </div>
           </div>
-          <!-- <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div> -->
         </div>
       </div>
     </div>
@@ -57,10 +50,6 @@
         </div>
       </div>
     </div>
-
-
-
-
 
 
 <div class="row">
@@ -108,13 +97,15 @@
           <tr *ngFor="let product of saleRequestTemp?.Products; let indexProducts=index" >
             <th scope="row" (click)='onclickProductComments(product.SaleRequestProductTempId)'>{{indexProducts + 1}}</th>
             <td>{{product.ProductPriceLookUpCode}}</td>
-            <!-- <td>{{product.Product?.EanCode}}</td> -->
+            <!-- <td>{{product.Product?.EanCode}}</td>  -->
             <td>{{product.Product?.NameReduced}}</td>
-            <td>{{ product.Quantity }}</td>
+            <td><span style="color: red;" (click)='onclickMinusQuantity(product.SaleRequestProductTempId)' *ngIf="product.Quantity > 0" ><i class="fa fa-minus-circle" aria-hidden="true"></i></span>
+              {{ product.Quantity }}
+              <span style="color: green;" (click)='onclickPlusQuantity(product.SaleRequestProductTempId)'><i class="fa fa-plus-circle" aria-hidden="true"></i></span></td>
             <td>{{product.Value | number : '1.2-2'}}</td>
             <td>{{product.TotalLiquid | number : '1.2-2'}}</td>
-            <td (click)='sendCancelItem(product.SaleRequestProductTempId)' style="background-color: red;">
-              <span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td>
+            <td (click)='sendCancelItem(product.SaleRequestProductTempId)' >
+              <span ><i style="color: red;" class="fa fa-trash" aria-hidden="true"></i></span></td>
           </tr>
         </tbody>
       </table>
@@ -129,18 +120,14 @@
           <button type="button" class="btn btn-outline-light ml-3" (click)='onclickSave()' >Salvar</button>
           <button type="button" class="btn btn-outline-light ml-3" *ngIf="isSaleRequest && isSaleRequestActiv" >Alterar</button>
           <button type="button" class="btn btn-outline-light ml-3"  *ngIf="isPrinted" >Imprimir</button>
-          <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='onclickCancel()'>Cancelar</button> -->
           <button type="button" class="btn btn-outline-light ml-3" (click)='onclickMoreSaleRequest()'>Exibir</button>
         </div>
       </div>
 
     </div>
   </div>
-  <button type="button" class="btn btn-outline-light ml-3" (click)='showSelectGroups()' data-toggle="modal" data-target="#exampleModal" >Pesquisar</button>
+  <button type="button" class="btn btn-outline-light ml-3" (click)='showSelectGroups()' data-toggle="modal" data-target="#exampleModal" *ngIf="isShowProductInput" >Pesquisar</button>
   <app-list-sale-request *ngIf="isShowSaleReqFull" [saleRequestPersonalizedCode]='saleRequestpersonalizedCode'></app-list-sale-request>
 </div>
 
-
-<!-- <button type="button" class="btn btn-outline-light ml-3" (click)='closeSelectGroups()' *ngIf="isModal" >Close</button> -->
-<!-- <button type="button" class="btn btn-outline-light ml-3" (click)='open(mymodal)' >Show</button> -->
 

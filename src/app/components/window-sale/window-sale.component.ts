@@ -38,6 +38,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   isShowSaleReqFull = false;
   @ViewChild('product') inputProduct;
   @ViewChild('saleRequest') inputSaleRequest;
+  @ViewChild('closebutton') closebutton;
   _qtdInput = 1;
   messageTop = 'TERMINAL LIVRE';
   isExecutingScript = false;
@@ -63,6 +64,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   myDate = new Date();
   comments: string;
   isShowProductInput = false;
+  myPersonPersonalizedCode: string;
 
 
   constructor(private serviceSaleRequestProduct: ServiceSaleRequestProductService, private serviceProduct: ServiceProductService,
@@ -108,16 +110,21 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   validTicketAcessControl(_ticketAccessControl: ModelTicket) {
-    const hour = _ticketAccessControl.DateHourLastRelease.toString();
-    const h = hour.substring(11);
-    const h1 = h.substring(0, 2);
-    const hourExpire = (this.myDate.getHours() + 5);
-    if ( Number(h1) > hourExpire) {
+    if (_ticketAccessControl.DateHourLastRelease === null || _ticketAccessControl.DateHourLastRelease === undefined) {
       Swal.fire('Comanda Bloqueada!',
-      'Esta comanda está bloqueada devido ao tempo desde sua última utilização que são de 5 horas. ', 'warning');
-      this.isExecutingScript = false;
+      'Comanda não liberada pela catraca. ', 'warning');
     } else {
-      this.getSaleRequestTemp();
+      const hour = _ticketAccessControl.DateHourLastRelease.toString();
+      const h = hour.substring(11);
+      const h1 = h.substring(0, 2);
+      const hourExpire = (this.myDate.getHours() + 5);
+      if ( Number(h1) > hourExpire) {
+        Swal.fire('Comanda Bloqueada!',
+        'Tempo de utilização vencido. (5 horas) ', 'warning');
+        this.isExecutingScript = false;
+      } else {
+        this.getSaleRequestTemp();
+      }
     }
   }
 
@@ -127,8 +134,10 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
 
   getSaleRequestTemp() {
     this.isExecutingScript = true;
+    this.myPersonPersonalizedCode = this.saleRequestpersonalizedCode;
+    this.myPersonPersonalizedCode = ('000' + this.saleRequestpersonalizedCode).slice(-3);
     this.sub.push(
-      this.serviceSaleRequest.getSaleRequestTemp(this.base.enterpriseId, this.saleRequestpersonalizedCode)
+      this.serviceSaleRequest.getSaleRequestTemp(this.base.enterpriseId, this.myPersonPersonalizedCode)
       .subscribe(saleRequestTempData => {
         this.saleRequestTemp = saleRequestTempData;
       },
@@ -148,7 +157,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
           this.isShowProductInput = true;
           this.isSaleRequestActiv = true;
           this.isSaleRequestTemp = true;
-          this.inputProduct.nativeElement.focus();
+          // this.inputProduct.nativeElement.focus();
           this.countProducts = this.countProducts + 1;
         }
       })
@@ -157,7 +166,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
 
   addSaleRequestTemp() {
     this.saleRequestTempNew.EnterpriseId = this.base.enterpriseId;
-    this.saleRequestTempNew.PersonalizedCode = this.saleRequestpersonalizedCode.toString();
+    this.saleRequestTempNew.PersonalizedCode = ('000' + this.saleRequestpersonalizedCode).slice(-3);
     this.sub.push(
       this.serviceSaleRequest.addSaleRequestTemp(this.saleRequestTempNew)
       .subscribe(responseAdd => {
@@ -171,6 +180,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         // fim - salvo - recarrega lista de pedidos pedido
         this.isSaleRequestActiv = true;
         this.isSaleRequestTemp = true;
+        this.inputProduct.nativeElement.focus();
         this.getSaleRequestTemp();
       })
     );
@@ -182,6 +192,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     if (value.includes('.')) {
       this._qtdInput = value.substring(0, 1); // .emit(filter.substring(0, 1));
       const p = value.substring(2);
+      this.clearInputProduct();
       this.getProduct(p);
     } else {
       if (!value) {
@@ -260,6 +271,11 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       // this.getGroups();
     }
 
+    closeModal() {
+      this.isModal = false;
+      this.isModalProd = false;
+    }
+
     closeSelectGroups() {
       this.isModal = false;
       this.isModalProd = false;
@@ -277,6 +293,13 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       console.log(productId);
       // this.isModalProd = false;
       this.color = 'rgb(67, 125, 83)';
+    }
+
+    onclickSelctProduct(pluProductCode) {
+      this.getProduct(pluProductCode);
+      this.isModalProd = false;
+      this.isModal = false;
+      this.closebutton.nativeElement.click();
     }
 
     getProduct(productCode) {
@@ -472,11 +495,41 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  deleteSaleRequestTempFull(saleResTempId) {
+  onclickPlusQuantity(saleRequestProductId) {
+   this.sub.push(
+     this.serviceProductService.updatePlusQuantity(saleRequestProductId)
+     .subscribe(resp => {
+
+     },
+     err => {
+      Swal.fire('Erro ao gravar o pedido.', err.error, 'error');
+     },
+     () => {
+      this.getSaleRequestTemp();
+     })
+   );
+  }
+
+  onclickMinusQuantity(saleRequestProductId) {
     this.sub.push(
-     //
+      this.serviceProductService.updateMinusQuantity(saleRequestProductId)
+      .subscribe(resp => {
+
+      },
+      err => {
+       Swal.fire('Erro ao gravar o pedido.', err.error, 'error');
+      },
+      () => {
+       this.getSaleRequestTemp();
+      })
     );
   }
+
+  // deleteSaleRequestTempFull(saleResTempId) {
+  //   this.sub.push(
+  //    //
+  //   );
+  // }
 
   ngOnInit() {
     this.inputSaleRequest.nativeElement.focus();

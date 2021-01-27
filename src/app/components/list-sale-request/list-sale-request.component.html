@@ -23,7 +23,8 @@
           <td>{{ p.Quantity }}</td>
           <td>{{p.Value | number : '1.2-2'}}</td>
           <td>{{p.TotalLiquid | number : '1.2-2'}}</td>
-          <td *ngIf="isCancelSaleReq" (click)='sendCancelItem(p.SaleRequestProductId)'><span style="color: red;" ><i class="fa fa-times" aria-hidden="true"></i></span></td>
+          <td *ngIf="isCancelSaleReq" (click)='sendCancelItem(p.SaleRequestProductId)'>
+            <span ><i style="color: red;" class="fa fa-trash" aria-hidden="true"></i></span></td>
         </tr>
       </tbody>
     </table>
