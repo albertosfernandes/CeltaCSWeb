@@ -13,7 +13,7 @@ export class ServiceBaseService {
   constructor(private http: HttpClient) {
     this.httpBase = this.http;
     this.urlapi = API;
-    this.enterpriseId = 3;
+    this.enterpriseId = 2;
   }
 
   public urlapi: string;

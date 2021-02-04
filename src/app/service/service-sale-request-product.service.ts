@@ -31,6 +31,17 @@ export class ServiceSaleRequestProductService {
       );
   }
 
+  cancelSaleRequestProduct(_saleRequestProductId) {
+    return this.base.httpBase
+    .get(this.base.urlapi + '/api/APISaleRequestProduct/CancelSaleRequestProduct?id=' + _saleRequestProductId)
+    .pipe(
+      tap(
+        data => console.log(data),
+        error => console.log(error)
+        )
+      );
+  }
+
   addSaleRequestProductTemp(_saleRequestProductTemp) {
     return this.base.httpBase
     .post(this.base.urlapi + '/api/APISaleRequestProduct/Add', _saleRequestProductTemp)
@@ -50,6 +61,29 @@ export class ServiceSaleRequestProductService {
       tap(
         data => console.log(data),
         err => console.error(err.error)
+      )
+    );
+  }
+
+  existsComments(_saleRequestProductId) {
+    return this.base.httpBase
+    .get<string>(this.base.urlapi + '/api/APISaleRequestProduct/CommentsExist?_saleRequestProductTempId='
+    + _saleRequestProductId)
+    .pipe(
+      tap(
+        data => console.log(data),
+        err => console.log(err.error)
+      )
+    );
+  }
+
+  markToPrint(_saleRequestProductId) {
+    return this.base.httpBase
+    .get(this.base.urlapi + '/api/APISaleRequestProduct/MarkToPrintedProductTemmp?_saleRequestProductId=' + _saleRequestProductId)
+    .pipe(
+      tap(
+        data => console.log(data),
+        err => console.log(err.error)
       )
     );
   }

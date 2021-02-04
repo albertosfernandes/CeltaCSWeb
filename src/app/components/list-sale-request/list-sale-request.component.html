@@ -5,31 +5,32 @@
         <tr>
           <th scope="col">Item</th>
           <th scope="col">PLU</th>
-          <th scope="col">EAN</th>
+          <!-- <th scope="col">EAN</th> -->
           <th scope="col">PRODUTO</th>
           <th scope="col">QTD</th>
           <th scope="col">UNIT.</th>
           <th scope="col">TOTAL</th>
-          <th scope="col"></th>
+          <th scope="col" *ngIf="isProductCancel"></th>
         </tr>
       </thead>
       <tbody>
         <!-- <p>Value: {{saleRequest.PersonalizedCode}}</p> -->
         <tr *ngFor="let p of saleRequest.Products" >
-          <th scope="row">{{p.SaleRequestProductId}}</th>
-          <td>{{p.ProductPriceLookUpCode}}</td>
-          <td>{{p.Product?.EanCode}}</td>
-          <td>{{p.Product?.NameReduced}}</td>
-          <td>{{ p.Quantity }}</td>
-          <td>{{p.Value | number : '1.2-2'}}</td>
-          <td>{{p.TotalLiquid | number : '1.2-2'}}</td>
-          <td *ngIf="isCancelSaleReq" (click)='sendCancelItem(p.SaleRequestProductId)'>
+          <th [class.table-danger]='p.IsCancelled' scope="row" >{{p.SaleRequestProductId}} <span style="color: red;" *ngIf="p.IsCancelled" >CANCELADO</span> </th>
+          <td [class.table-danger]='p.IsCancelled'>{{p.ProductPriceLookUpCode}}</td>
+          <!-- <td>{{p.Product?.EanCode}}</td> -->
+          <td [class.table-danger]='p.IsCancelled'>{{p.Product?.NameReduced}}</td>
+          <td [class.table-danger]='p.IsCancelled'>{{ p.Quantity }}</td>
+          <td [class.table-danger]='p.IsCancelled'>{{p.Value | number : '1.2-2'}}</td>
+          <td [class.table-danger]='p.IsCancelled'>{{p.TotalLiquid | number : '1.2-2'}}</td>
+          <td *ngIf="!p.IsCancelled" (click)='onclickCancel(p.SaleRequestProductId)'>
             <span ><i style="color: red;" class="fa fa-trash" aria-hidden="true"></i></span></td>
         </tr>
       </tbody>
     </table>
     <div>
-      <button type="button" class="btn btn-outline-dark ml-3" (click)='onclickShowCancel()' >Cancelar</button>
+      <!-- <button type="button" class="btn btn-outline-dark ml-3" (click)='onclickShowCancel()' >Cancelar</button> -->
+      <!-- <button type="button" class="btn btn-outline-dark ml-3" (click)='onclickTesteHeader()' >Teste Header</button> -->
     </div>
   </div>
 

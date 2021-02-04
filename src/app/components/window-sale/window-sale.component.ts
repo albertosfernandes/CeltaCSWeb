@@ -1,3 +1,4 @@
+import { ServiceUsersService } from './../../service/service-users.service';
 import { ModelTicket } from './../../model/model-ticket';
 import { ModelGroup } from './../../model/model-group';
 import { ModelSaleRequestProduct } from './../../model/model-saleRequestProduct';
@@ -35,7 +36,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   isSaleRequestActiv = false;
   isCancel = false;
   isPrinted = false;
-  isShowSaleReqFull = false;
+  isShowSaleReqFull = true;
   @ViewChild('product') inputProduct;
   @ViewChild('saleRequest') inputSaleRequest;
   @ViewChild('closebutton') closebutton;
@@ -63,13 +64,16 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   isTicketAccessControl: any;
   myDate = new Date();
   comments: string;
+  commentsReceived: string;
   isShowProductInput = false;
   myPersonPersonalizedCode: string;
+  isValidDateTime: any;
 
 
   constructor(private serviceSaleRequestProduct: ServiceSaleRequestProductService, private serviceProduct: ServiceProductService,
               private serviceSaleRequest: ServiceSaleRequestService, private base: ServiceBaseService,
-              private serviceProductService: ServiceProductService, private modalService: NgbModal) { }
+              private serviceProductService: ServiceProductService, private modalService: NgbModal,
+              private serviceUsers: ServiceUsersService) { }
 
   onclickSaleRequest(saleRequestValue) {
     if (!saleRequestValue) {
@@ -102,6 +106,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         if (this.ticketAccessControl === null) {
           Swal.fire('Comanda não cadastrada!', ' ', 'warning');
           this.isExecutingScript = false;
+          this.isShowSaleReqFull = false;
         } else {
           this.validTicketAcessControl(this.ticketAccessControl);
         }
@@ -113,26 +118,51 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     if (_ticketAccessControl.DateHourLastRelease === null || _ticketAccessControl.DateHourLastRelease === undefined) {
       Swal.fire('Comanda Bloqueada!',
       'Comanda não liberada pela catraca. ', 'warning');
+      this.isExecutingScript = false;
+      this.isShowSaleReqFull = false;
     } else {
-      const hour = _ticketAccessControl.DateHourLastRelease.toString();
-      const h = hour.substring(11);
-      const h1 = h.substring(0, 2);
-      const hourExpire = (this.myDate.getHours() + 5);
-      if ( Number(h1) > hourExpire) {
-        Swal.fire('Comanda Bloqueada!',
-        'Tempo de utilização vencido. (5 horas) ', 'warning');
-        this.isExecutingScript = false;
-      } else {
-        this.getSaleRequestTemp();
-      }
+      this.sub.push(
+        this.serviceSaleRequest.saleRequestIsValidDateTime(_ticketAccessControl.Number)
+        .subscribe(respDateTimeValid => {
+          this.isValidDateTime = respDateTimeValid;
+        },
+        err => {
+          Swal.fire('Erro ao consultar data e hora da comanda.', err.error, 'error');
+        },
+        () => {
+          if (!this.isValidDateTime) {
+            Swal.fire('Comanda Bloqueada!',
+                  'Tempo de utilização vencido. (5 horas) ', 'warning');
+            this.isExecutingScript = false;
+            this.isShowSaleReqFull = false;
+          } else {
+            this.getSaleRequestTemp();
+          }
+        })
+      );
     }
   }
 
-  onclickMoreSaleRequest() {
-    this.isShowSaleReqFull = !this.isShowSaleReqFull;
+  onclickNotPrinted(idSaleRequestProductTemp) {
+    this.sub.push(
+      this.serviceSaleRequestProduct.markToPrint(idSaleRequestProductTemp)
+      .subscribe(resp => {
+        // trabalhando ...
+      },
+      err => {
+        Swal.fire('Erro ao marcar pedido como entregue.', err.error, 'error');
+      },
+      () => {
+        this.getSaleRequestTemp();
+      })
+    );
   }
+  // sempre exibir
+  // onclickMoreSaleRequest() {
+  //   this.isShowSaleReqFull = !this.isShowSaleReqFull;
+  // }
 
-  getSaleRequestTemp() {
+   getSaleRequestTemp() {
     this.isExecutingScript = true;
     this.myPersonPersonalizedCode = this.saleRequestpersonalizedCode;
     this.myPersonPersonalizedCode = ('000' + this.saleRequestpersonalizedCode).slice(-3);
@@ -147,24 +177,26 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       },
       () => {
         if (this.saleRequestTemp == null || this.saleRequestTemp === undefined) {
-              // vms criar uma nova Temp então
-              this.isExecutingScript = false;
-              this.isShowProductInput = true;
-              this.addSaleRequestTemp();
-        } else {
-          // carrega ele então
+          // vms criar uma nova Temp então
           this.isExecutingScript = false;
-          this.isShowProductInput = true;
-          this.isSaleRequestActiv = true;
-          this.isSaleRequestTemp = true;
-          // this.inputProduct.nativeElement.focus();
-          this.countProducts = this.countProducts + 1;
-        }
-      })
+          this.comments = '';
+          this.addSaleRequestTemp();
+    } else {
+      // carrega ele então
+      this.isExecutingScript = false;
+      this.isShowProductInput = true;
+      this.isSaleRequestActiv = true;
+      this.isSaleRequestTemp = true;
+      this.comments = '';
+      this.countProducts = this.countProducts + 1;
+      this.clearInputProduct();
+    }
+      }
+      )
     );
   }
 
-  addSaleRequestTemp() {
+  async addSaleRequestTemp() {
     this.saleRequestTempNew.EnterpriseId = this.base.enterpriseId;
     this.saleRequestTempNew.PersonalizedCode = ('000' + this.saleRequestpersonalizedCode).slice(-3);
     this.sub.push(
@@ -180,7 +212,6 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         // fim - salvo - recarrega lista de pedidos pedido
         this.isSaleRequestActiv = true;
         this.isSaleRequestTemp = true;
-        this.inputProduct.nativeElement.focus();
         this.getSaleRequestTemp();
       })
     );
@@ -256,6 +287,10 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         );
     }
 
+    backModal() {
+      this.isModalProd = false;
+      this.isModal = true;
+    }
 
     showSelectGroups() {
       // this.isModal = true;
@@ -298,7 +333,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     onclickSelctProduct(pluProductCode) {
       this.getProduct(pluProductCode);
       this.isModalProd = false;
-      this.isModal = false;
+      this.isModal = true;
       this.closebutton.nativeElement.click();
     }
 
@@ -333,26 +368,72 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     clearInputProduct() {
       this.inputProduct.nativeElement.value = '';
       this._qtdInput = 1;
+      this.inputProduct.nativeElement.focus();
     }
 
     clearInputSaleRequest() {
       this.inputSaleRequest.nativeElement.value = '';
     }
 
-    onclickProductComments(saleRequestProductIdValue) {
-      Swal.fire({
+    onclickEsc() {
+      window.location.reload();
+    }
+
+    async onclickProductComments(saleRequestProductIdValue) {
+      const { value: _comments } = await Swal.fire({
         title: 'Observação',
         text: 'Inserir observação sobre o produto',
+        // html: '<input id="swal-comment" class="swal2-input">' ,
         input: 'text',
         showCancelButton: true ,
-        confirmButtonColor: 'green'
-        }).then((result) => {
-        if (result.value) {
-            this.comments = result.value;
-            this.sendCommentsProduct(this.comments, saleRequestProductIdValue);
-        } else {
-          // nenhuma observação adicionada
-        }});
+        confirmButtonColor: 'green',
+        focusConfirm: false,
+        inputValue: this.commentsReceived
+      });
+
+        // preConfirm: (textValue) => {
+        //   if (this.commentsReceived != null) {
+        //     (<HTMLInputElement>document.getElementById('swal-comment')).innerText = this.commentsReceived;
+        //   }
+        //   let inputValue = (<HTMLInputElement>document.getElementById('swal-comment')).value;
+        //   return [
+        //     inputValue = (<HTMLInputElement>document.getElementById('swal-comment')).value
+        //   ];
+        // },
+        // });
+
+        if (_comments) {
+          this.comments = _comments;
+          this.sendCommentsProduct(this.comments, saleRequestProductIdValue);
+        }
+
+
+        // .then((result) => {
+        // if (result.value) {
+        //     this.comments = result.value;
+        //     this.sendCommentsProduct(this.comments, saleRequestProductIdValue);
+        // } else {
+        //   // nenhuma observação adicionada
+        // }});
+    }
+
+    existComments(saleRequestProductId) {
+      this.sub.push(
+        this.serviceSaleRequestProduct.existsComments(saleRequestProductId)
+        .subscribe(resp => {
+          if (resp != null || resp !== undefined) {
+            this.commentsReceived = resp;
+          }
+        },
+        err => {
+
+        },
+        () => {
+          // .
+          console.log('comments value: ' + this.commentsReceived);
+          this.onclickProductComments(saleRequestProductId);
+        })
+      );
     }
 
     sendCommentsProduct(_comments, _saleRequestProductIdValue) {
@@ -365,7 +446,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
           Swal.fire('Erro ao atualizar observação de pedido.', err.error, 'error');
         },
         () => {
-          this.saleRequestProductTemp.Comments = _comments;
+          // this.saleRequestProductTemp.Comments = _comments;
           this.getSaleRequestTemp();
         })
       );
@@ -381,6 +462,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       this.saleRequestProductTemp.SaleRequestTempId = this.saleRequestTemp.SaleRequestTempId;
       this.saleRequestProductTemp.TotalLiquid = (this._qtdInput * _product.SaleRetailPrice);
       this.saleRequestProductTemp.Value = _product.SaleRetailPrice;
+      this.saleRequestProductTemp.IsPrinted = false;
       this.updateSaleRequestTemp(this.saleRequestProductTemp);
     }
 
@@ -406,7 +488,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
           // fim
           this.saleRequestTemp.Products = [];
           _saleRequestTempFull.Products = [];
-          this.clearInputProduct();
+          // this.clearInputProduct();
           this.getSaleRequestTemp();
         })
       );
@@ -433,21 +515,38 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  onclickSave() {
-      Swal.fire({
+  async onclickSave() {
+    const { value: formValues } = await Swal.fire({
       title: 'Pedido com entrega?',
       text: 'Informe o número da bandeira:',
-      input: 'number',
-      showCancelButton: true ,
-      confirmButtonColor: 'green'
-      }).then((result) => {
-      if (result.value) {
-          // Swal.fire('Result:' + result.value);
-          this.saleRequestTemp.DeliveryControl = result.value;
-          this.finishSaleRequestTemp(this.saleRequestTemp);
-      } else {
+      html: '<input id="band" type="number" class="swal2-input" autofocus>',
+      // input: 'number',
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonColor: 'green',
+      onOpen: () => {
+        // const test = Swal.getInput;
+        // test.focus();
+      },
+      preConfirm: () => {
+        let inputValueBand = (<HTMLInputElement>document.getElementById('band')).value;
+        return [
+          inputValueBand = (<HTMLInputElement>document.getElementById('band')).value
+        ];
+      }
+      });
+      if (formValues) {
+        this.saleRequestTemp.DeliveryControl = formValues[0];
         this.finishSaleRequestTemp(this.saleRequestTemp);
-      }});
+      }
+      // .then((result) => {
+      // if (result.value) {
+      //     // Swal.fire('Result:' + result.value);
+      //     this.saleRequestTemp.DeliveryControl = result.value;
+      //     this.finishSaleRequestTemp(this.saleRequestTemp);
+      // } else {
+      //   this.getSaleRequestTemp();
+      // }});
     }
 
   finishSaleRequestTemp(_saleReqtemp) {
@@ -470,6 +569,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         this.inputSaleRequest.nativeElement.focus();
         this.messageTop = 'TERMINAL LIVRE';
         this.countProducts = 0;
+        window.location.reload();
       })
     );
   }
@@ -525,11 +625,6 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  // deleteSaleRequestTempFull(saleResTempId) {
-  //   this.sub.push(
-  //    //
-  //   );
-  // }
 
   ngOnInit() {
     this.inputSaleRequest.nativeElement.focus();
@@ -537,11 +632,10 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
     // this.saleRequestTemp = new ModelSaleRequestTemp();
   }
   ngOnDestroy() {
-
+    this.sub.forEach(sub => sub.unsubscribe);
   }
   ngOnChanges() {
     this.getSaleRequestTemp();
   }
-
 
 }

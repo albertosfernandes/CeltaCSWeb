@@ -98,4 +98,15 @@ export class ServiceSaleRequestService {
     return this.base.httpBase
     .post(this.base.urlapi + '/api/apiSaleRequest/AddSaleRequest', saleRequest, { responseType: 'text' });
   }
+
+  saleRequestIsValidDateTime(_ticketNumber) {
+    return this.base.httpBase
+    .get<boolean>(this.base.urlapi + '/api/APITicketAC/IsValidDateTime?ticketNumber=' + _ticketNumber)
+    .pipe(
+      tap(
+        data => console.log(data),
+        err => console.log(err.error)
+      )
+    );
+  }
 }

@@ -12,4 +12,5 @@ export class ModelSaleRequestProductTemp {
   SaleRequestTemp: ModelSaleRequestTemp;
   SaleRequestTempId: number;
   Comments: string;
+  IsPrinted: boolean;
 }

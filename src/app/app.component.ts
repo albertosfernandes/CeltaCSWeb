@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs';
 import { ModelSaleRequestProductTemp } from 'src/app/model/model-saleRequestProductTemp';
 import { ModelProduct } from './model/model-product';
-import { Component, OnChanges, OnInit } from '@angular/core';
+import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ModelSaleRequestTemp } from './model/model-saleRequestTemp';
 
 @Component({
@@ -9,46 +9,46 @@ import { ModelSaleRequestTemp } from './model/model-saleRequestTemp';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnChanges {
+export class AppComponent implements OnInit, OnChanges, OnDestroy {
 
 
-  isNewSaleRequestTemp: boolean;
-  isAddProduct = false;
-  product: ModelProduct;
+  // isNewSaleRequestTemp: boolean;
+  // isAddProduct = false;
+  // product: ModelProduct;
   subscription: Subscription[] = [];
-  saleRequestProductTemp = new ModelSaleRequestProductTemp();
-  saleRequestTemp: ModelSaleRequestTemp;
-  quantidade: number;
-  _isCancel = false;
+  // saleRequestProductTemp = new ModelSaleRequestProductTemp();
+  // saleRequestTemp: ModelSaleRequestTemp;
+  // quantidade: number;
+  _isShowWindowCommand = true;
 
-  receiveSaleRequest(isSaleRequestNew) {
-    this.isNewSaleRequestTemp = isSaleRequestNew;
-  }
+  // receiveSaleRequest(isSaleRequestNew) {
+  //   this.isNewSaleRequestTemp = isSaleRequestNew;
+  // }
 
-  recebeProduct(myprod: ModelProduct) {
-    this.product = myprod;
-  }
+  // recebeProduct(myprod: ModelProduct) {
+  //   this.product = myprod;
+  // }
 
-  receiveIsCancel($event) {
-    this._isCancel = $event;
-    console.log('app.comp isCancel: ' + this._isCancel);
-  }
+  // receiveIsCancel($event) {
+  //   this._isCancel = $event;
+  //   console.log('app.comp isCancel: ' + this._isCancel);
+  // }
 
-  receiveCurrentSaleRequestTemp(saleRequestTempCode) {
-    console.log('Comanda temp aberta: ' + saleRequestTempCode);
-  }
+  // receiveCurrentSaleRequestTemp(saleRequestTempCode) {
+  //   console.log('Comanda temp aberta: ' + saleRequestTempCode);
+  // }
 
-  receiveSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
-    console.log('toda comanda ' + saleRequestTemp);
-    this.saleRequestTemp = saleRequestTemp;
-    this.isAddProduct = true;
-    this.isNewSaleRequestTemp = true;
-  }
+  // receiveSaleRequestTemp(saleRequestTemp: ModelSaleRequestTemp) {
+  //   console.log('toda comanda ' + saleRequestTemp);
+  //   this.saleRequestTemp = saleRequestTemp;
+  //   this.isAddProduct = true;
+  //   this.isNewSaleRequestTemp = true;
+  // }
 
-  receiveQtd(_quantidade) {
-    this.quantidade = _quantidade;
-    alert(_quantidade);
-  }
+  // receiveQtd(_quantidade) {
+  //   this.quantidade = _quantidade;
+  //   alert(_quantidade);
+  // }
 
   ngOnInit() {
 
@@ -56,5 +56,9 @@ export class AppComponent implements OnInit, OnChanges {
 
   ngOnChanges() {
 
-    }
+  }
+
+  ngOnDestroy() {
+
+  }
 }
