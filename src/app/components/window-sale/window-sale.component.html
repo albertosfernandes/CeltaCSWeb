@@ -35,10 +35,14 @@
       <div class="col-md-3">
         <div class="input-group input-group-lg">
           <div class="input-group-prepend">
-            <span class="input-group-text" style="text-decoration: underline;" id="inputGroup-sizing-lg">Comanda</span>
+            <span class="input-group-text" style="text-decoration: underline;" id="inputGroup-sizing-lg" (click)='loadCommands()' >Comanda</span>
+
           </div>
           <input id="saleRequest" type="number" #saleRequest class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
           autofocus (keyup.enter)="onclickSaleRequest($event.target.value)" [disabled]='isSaleRequestActiv' required minlength="4">
+          <div class="input-group-prepend">
+            <button *ngIf="isSaleRequestActiv" (click)='onclickEsc()' class="btn btn-light" type="button" style="padding: 0;"><i class="fa fa-times-circle fa-2x" aria-hidden="true" style="color: red;"></i></button>
+          </div>
         </div>
         <div *ngIf="isExecutingScript">
           <div class="spinner-border" role="status" style="margin-left: 50%;">
@@ -57,14 +61,20 @@
       </div>
     </div>
 
+<div *ngIf="isShwoloadCommands" >
+  <app-search-sale-request></app-search-sale-request>
+</div>
 
 <div class="row" *ngIf="isShowProductInput">
   <div class="col-sm-3"  >
     <label class="font-weight-bold" for="basic-url">Produto</label>
     <div class="input-group mb-3">
-       <input type="number" id="input-product" #product class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
-      (keyup.enter)='onclickProduct($event.target.value)'
-    />
+       <input type="number" id="product" #product class="form-control font-weight-bold" aria-label="Large" aria-describedby="inputGroup-sizing-lg"
+      (keyup.enter)='onclickProduct($event.target.value)' autofocus/>
+      <div class="input-group-prepend">
+        <button class="btn btn-light" type="button" (click)='showSelectGroups()' data-toggle="modal" data-target="#exampleModal" *ngIf="isShowProductInput"><i class="fa fa-search fa-2x" aria-hidden="true"></i></button>
+      </div>
+
    <div>
 
    </div>
@@ -96,7 +106,7 @@
             <th scope="col">QTD</th>
             <th scope="col">UNIT.</th>
             <th scope="col">TOTAL</th>
-            <th scope="col"></th>
+            <th scope="col">Entregue</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -111,8 +121,11 @@
               <span style="color: green;" (click)='onclickPlusQuantity(product.SaleRequestProductTempId)'><i class="fa fa-plus-circle" aria-hidden="true"></i></span></td>
             <td>{{product.Value | number : '1.2-2'}}</td>
             <td>{{product.TotalLiquid | number : '1.2-2'}}</td>
-            <td (click)='onclickNotPrinted(product.SaleRequestProductTempId)' >
-              <span ><i style="color: blue;" class="fa fa-print" aria-hidden="true"></i></span></td>
+            <td>
+              <input type="checkbox" [checked]='product.IsPrinted' id="checkNotPrint" name="checkNotPrint" #checkNotPrint (click)='onclickNotPrint(product.SaleRequestProductTempId, product.IsPrinted)'>
+            </td>
+            <!-- <td (click)='onclickNotPrinted(product.SaleRequestProductTempId)' >
+              <span ><i style="color: blue;" class="fa fa-print" aria-hidden="true"></i></span></td> -->
             <td (click)='sendCancelItem(product.SaleRequestProductTempId)' >
               <span ><i style="color: red;" class="fa fa-trash" aria-hidden="true"></i></span></td>
           </tr>
@@ -126,8 +139,8 @@
     <div class="row justify-content-md-center" *ngIf="isSaleRequestActiv" >
       <div class="row ">
         <div class="col-sm-12 mt-2">
-          <button type="button" class="btn btn-outline-light ml-3" (click)='onclickSave()' >Salvar</button>
-          <button type="button" class="btn btn-outline-light ml-3" (click)='onclickEsc()' >Limpar</button>
+          <button type="button" class="btn btn-outline-light ml-3" (click)='onclickSave()' *ngIf="!isShwoloadCommands"  >Salvar</button>
+          <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='onclickEsc()' >Limpar</button> -->
           <button type="button" class="btn btn-outline-light ml-3" *ngIf="isSaleRequest && isSaleRequestActiv" >Alterar</button>
           <button type="button" class="btn btn-outline-light ml-3"  *ngIf="isPrinted" >Imprimir</button>
           <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='onclickMoreSaleRequest()'>Exibir</button> -->
@@ -136,7 +149,7 @@
 
     </div>
   </div>
-  <button type="button" class="btn btn-outline-light ml-3" (click)='showSelectGroups()' data-toggle="modal" data-target="#exampleModal" *ngIf="isShowProductInput" >Pesquisar</button>
+  <!-- <button type="button" class="btn btn-outline-light ml-3" (click)='showSelectGroups()' data-toggle="modal" data-target="#exampleModal" *ngIf="isShowProductInput" >Pesquisar</button> -->
   <app-list-sale-request *ngIf="isShowSaleReqFull" [saleRequestPersonalizedCode]='saleRequestpersonalizedCode'></app-list-sale-request>
 </div>
 

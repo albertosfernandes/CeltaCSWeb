@@ -87,4 +87,15 @@ export class ServiceSaleRequestProductService {
       )
     );
   }
+
+  unmarkToPrint(_saleRequestProductId) {
+    return this.base.httpBase
+    .get(this.base.urlapi + '/api/APISaleRequestProduct/UnMarkToPrintedProductTemmp?_saleRequestProductId=' + _saleRequestProductId)
+    .pipe(
+      tap(
+        data => console.log(data),
+        err => console.log(err.error)
+      )
+    );
+  }
 }

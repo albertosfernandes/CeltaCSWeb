@@ -8,7 +8,7 @@ import { ModelSaleRequestProductTemp } from 'src/app/model/model-saleRequestProd
 import { ServiceBaseService } from './../../service/service-base.service';
 import { ServiceProductService } from './../../service/service-product.service';
 import { ServiceSaleRequestProductService } from './../../service/service-sale-request-product.service';
-import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { ServiceSaleRequestService } from 'src/app/service/service-sale-request.service';
 import { ModelSaleRequest } from 'src/app/model/model-saleRequest';
@@ -40,11 +40,13 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('product') inputProduct;
   @ViewChild('saleRequest') inputSaleRequest;
   @ViewChild('closebutton') closebutton;
+  @ViewChild('checkNotPrint') checkNotPrint: ElementRef<HTMLInputElement>[];
   _qtdInput = 1;
   messageTop = 'TERMINAL LIVRE';
   isExecutingScript = false;
   isExecutingProd = false;
   closeResult: string;
+  isNotPrinted = false;
 
   saleRequestpersonalizedCode: any;
   ticketAccessControl: ModelTicket;
@@ -68,6 +70,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
   isShowProductInput = false;
   myPersonPersonalizedCode: string;
   isValidDateTime: any;
+  isShwoloadCommands = false;
 
 
   constructor(private serviceSaleRequestProduct: ServiceSaleRequestProductService, private serviceProduct: ServiceProductService,
@@ -132,7 +135,7 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
         () => {
           if (!this.isValidDateTime) {
             Swal.fire('Comanda Bloqueada!',
-                  'Tempo de utilização vencido. (5 horas) ', 'warning');
+                  'Tempo de utilização vencido. (12 horas) ', 'warning');
             this.isExecutingScript = false;
             this.isShowSaleReqFull = false;
           } else {
@@ -494,9 +497,40 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
       );
     }
 
-  // onclickCancel() {
-  //   this.isCancel = true;
-  // }
+    markToPrint(idSaleRequestProductTemp) {
+
+    }
+    onclickNotPrint(idSaleRequestProductTemp, isPrint) {
+
+      if (!isPrint) {
+        console.log('Valor para marcar print: ' + idSaleRequestProductTemp);
+      this.sub.push(
+        this.serviceSaleRequestProduct.markToPrint(idSaleRequestProductTemp)
+        .subscribe(resp => {
+          // trabalhando ...
+        },
+        err => {
+          Swal.fire('Erro ao marcar pedido como entregue.', err.error, 'error');
+        },
+        () => {
+          this.getSaleRequestTemp();
+        })
+      );
+      } else {
+        this.sub.push(
+          this.serviceSaleRequestProduct.unmarkToPrint(idSaleRequestProductTemp)
+          .subscribe(resp => {
+            // trabalhando ...
+          },
+          err => {
+            Swal.fire('Erro ao marcar pedido como entregue.', err.error, 'error');
+          },
+          () => {
+            this.getSaleRequestTemp();
+          })
+        );
+      }
+    }
 
   sendCancelItem(idSaleRequestProductTemp) {
     this.sub.push(
@@ -623,6 +657,12 @@ export class WindowSaleComponent implements OnInit, OnChanges, OnDestroy {
        this.getSaleRequestTemp();
       })
     );
+  }
+
+  loadCommands() {
+    this.isShwoloadCommands = true;
+    this.messageTop = 'CONSULTA DE COMANDAS';
+    this.isSaleRequestActiv = true;
   }
 
 

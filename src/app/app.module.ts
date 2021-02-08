@@ -12,6 +12,7 @@ import { ListSaleRequestComponent } from './components/list-sale-request/list-sa
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { WindowNewSaleRequestComponent } from './components/window-new-sale-request/window-new-sale-request.component';
+import { SearchSaleRequestComponent } from './components/search-sale-request/search-sale-request.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { WindowNewSaleRequestComponent } from './components/window-new-sale-requ
     ButtonsControlComponent,
     WindowSaleComponent,
     ListSaleRequestComponent,
-    WindowNewSaleRequestComponent
+    WindowNewSaleRequestComponent,
+    SearchSaleRequestComponent
   ],
   imports: [
     BrowserModule,

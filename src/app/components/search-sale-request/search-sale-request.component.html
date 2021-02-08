@@ -1,0 +1,71 @@
+<div class="row">
+<div class="col-md-3">
+
+</div>
+<div class="col-md-9 ">
+  <form>
+    <div class="custom-control custom-checkbox custom-control-inline">
+      <input type="checkbox" class="custom-control-input" [checked]='isShowOpen' id="checkOpen" name="checkOpen" (change)='selectIsOpen(isShowOpen)'>
+      <label class="custom-control-label" for="checkOpen">ABERTAS</label>
+    </div>
+    <div class="custom-control custom-checkbox custom-control-inline">
+      <input type="checkbox" class="custom-control-input" [checked]='isShowBlocked' id="checkClose" name="checkClose" (change)='selectIsBlock(isShowBlocked)'>
+      <label class="custom-control-label" for="checkClose">BLOQUEADAS</label>
+    </div>
+  </form>
+  <div class="border border-dark rounded p-3 bg-white text-dark" *ngIf="isShowOpen">
+    <div class="table-responsive">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col">NÚMERO</th>
+            <th scope="col">EMISSÃO</th>
+            <th scope="col">TOTAL</th>
+            <th scope="col">DETALHES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tkt of ticketsSaleRequest; let indexProducts=index" >
+            <th scope="row" [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number' [style.color]='tkt.Ticket.Number === "4"'>{{indexProducts + 1}}</th>
+            <td [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number'>{{tkt.Ticket.Number}}</td>
+            <td [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number'>{{tkt.Ticket.DateHourLastRelease |date: 'MM/dd HH:mm'}}</td>
+            <td [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number'>{{tkt.SaleRequest.TotalLiquid |number : '1.2-2'}}</td>
+            <td [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number'>
+              <span *ngIf="ticketNumberSelected !== tkt.Ticket.Number"  (click)='loadSaleRequest(tkt.Ticket.Number)' ><i style="color: blue;" class="fa fa-plus" aria-hidden="true"></i></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="border border-dark rounded p-3 bg-white text-dark" *ngIf="isShowBlocked" >
+      <div class="table-responsive">
+        <table class="table">
+          <thead class="table-danger">
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">NÚMERO</th>
+              <th scope="col">EMISSÃO</th>
+              <th scope="col">TOTAL</th>
+              <th scope="col">DETALHES</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tkt of ticketsBlockedSaleRequest; let indexProducts=index" >
+              <th scope="row" [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number' [style.color]='tkt.Ticket.Number === "4"'>{{indexProducts + 1}}</th>
+              <td [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number'>{{tkt.Ticket.Number}}</td>
+              <td [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number'>{{tkt.Ticket.DateHourLastRelease |date: 'MM/dd HH:mm'}}</td>
+              <td [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number'>{{tkt.SaleRequest.TotalLiquid |number : '1.2-2'}}</td>
+              <td [class.table-primary]='ticketNumberSelected === tkt.Ticket.Number'>
+                <span *ngIf="ticketNumberSelected !== tkt.Ticket.Number"  (click)='loadSaleRequest(tkt.Ticket.Number)' ><i style="color: blue;" class="fa fa-plus" aria-hidden="true"></i></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  </div>
+</div>
+<div class="mt2">
+  <app-list-sale-request *ngIf="isShowSaleReqFull" [saleRequestPersonalizedCode]='saleRequestpersonalizedCode'></app-list-sale-request>
+</div>

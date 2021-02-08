@@ -36,18 +36,6 @@ export class ServiceUsersService {
     );
   }
 
-  // authenticateUser(userPersonalizedCode, password) {
-  //   return this.base.httpBase
-  //   .get(this.base.urlapi + '/api/APIusers/ValidUserDeHashPasswordCookie?personalizedCode='
-  //   + userPersonalizedCode + '&cipherString=' + password, {observe: 'response'})
-  //   .pipe(
-  //     tap(
-  //       resp =>
-  //       console.log('Meu Header é: ' + resp.headers.getAll('CeltaCSWebCookie'))
-  //     )
-  //   );
-  // }
-
   loginUser(userPersonalizedCode, password): Observable<HttpResponse<Object>> {
     const httpHeaders = new HttpHeaders();
      httpHeaders.keys();
